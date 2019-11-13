@@ -1,13 +1,16 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: Nadzif Glovory
+ * Date: 11/14/2019
+ * Time: 3:56 AM
+ */
 
 namespace nadzif\base\components;
 
-use Closure;
-use SuperClosure\SerializerInterface;
 
 class ClosureHelper
 {
-
     public $closureMarker = 'SuperClosure';
 
     /** @var SerializerInterface */
@@ -80,5 +83,4 @@ class ClosureHelper
         $this->restoreClosures($object);
         return $object;
     }
-
 }

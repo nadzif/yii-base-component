@@ -72,41 +72,7 @@ class GridView extends \kartik\grid\GridView
             Html::addCssClass($this->options, 'hide-resize');
         }
         //----------------------------------------------stream export------------------------------------------------------------
-        if ($this->showExportAll) {
 
-            $dataModel   = new $this->filterModel;
-            $columns     = $dataModel->columns;
-            $dataColumns = [];
-
-            foreach ($columns as $column) {
-                $columnClass     = ArrayHelper::getValue($column, 'class', null);
-                $columnValue     = ArrayHelper::getValue($column, 'value');
-                $columnLabel     = ArrayHelper::getValue($column, 'label');
-                $columnAttribute = ArrayHelper::getValue($column, 'attribute');
-
-                if ($columnClass == ActionColumn::className()
-                    || $columnClass == \kartik\grid\SerialColumn::className()
-                    || $columnAttribute == 'fileThumbnailFilename'
-                ) {
-                    continue;
-                }
-                if ($columnValue instanceof \Closure || !$columnValue) {
-                    $dataColumns[] = [
-                        'attribute' => ArrayHelper::getValue($column, 'attribute'),
-                        'label'     => ArrayHelper::getValue($column, 'label')
-                    ];
-                } else {
-                    $dataColumns[] = ['attribute' => $columnValue, 'label' => $columnLabel];
-                }
-            }
-            $serializer = new ClosureHelper(new \SuperClosure\Serializer());
-            $exportAll  = Html::beginForm(\yii\helpers\Url::to(["/{$this->moduleId}/export/download-all"]), 'post');
-            $exportAll  .= Html::hiddenInput('dataProvider',
-                base64_encode($serializer->serialize($this->dataProvider)));
-            $exportAll  .= Html::hiddenInput('columns', base64_encode($serializer->serialize($dataColumns)));
-            $exportAll  .= Html::submitButton('Export All', ['class' => 'btn btn-success']);
-            $exportAll  .= Html::endForm();
-        }
         //----------------------------------------------------------------------------------------------------------
 
         $this->replaceLayoutTokens([

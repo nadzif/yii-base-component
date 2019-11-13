@@ -13,8 +13,8 @@
  * @var array                        $toolbars
  */
 
-use backend\base\FormModel;
-use backend\widgets\GridView;
+use nadzif\base\models\FormModel;
+use nadzif\base\widgets\GridView;
 use kartik\select2\Select2;
 use rmrevin\yii\fontawesome\FontAwesome;
 use yii\helpers\ArrayHelper;
@@ -83,7 +83,7 @@ if ($showCreateButton) {
         $model = $createConfig['model'];
         $model->setScenario(FormModel::SCENARIO_CREATE);
 
-        echo $this->render('@backend/actions/layouts/_form', [
+        echo $this->render('@nadzif/base/layouts/_form', [
             'model'        => $model,
             'asModal'      => true,
             'modalOptions' => ArrayHelper::getValue($createConfig, 'modal', []),
@@ -123,6 +123,6 @@ if ($initWrapper) {
     echo Html::endTag('div');
 }
 
-if ($gridModel->actionColumn && $gridModel->actionColumnClass == \backend\base\ActionColumn::className()) {
+if ($gridModel->actionColumn && $gridModel->actionColumnClass == \nadzif\base\components\ActionColumn::className()) {
     echo Html::tag('div', false, ['id' => 'grid-update-section', 'style' => 'width:0; height:0; overflow: hidden;']);
 }
