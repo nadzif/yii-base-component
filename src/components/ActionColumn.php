@@ -8,8 +8,7 @@
 
 namespace nadzif\base\components;
 
-
-use http\Url;
+use yii\helpers\Url;
 use yii\helpers\Html;
 use yii\web\JsExpression;
 
