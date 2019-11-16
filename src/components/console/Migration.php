@@ -1,6 +1,6 @@
 <?php
 
-namespace console\components;
+namespace nadzif\base\components\console;
 
 class Migration extends \yii\db\Migration
 {
@@ -29,17 +29,10 @@ class Migration extends \yii\db\Migration
         }
     }
 
-    public function generateForeignKey(
-        $table,
-        $columns,
-        $refTable,
-        $refColumns,
-        $delete = 'CASCADE',
-        $update = 'CASCADE'
-    ) {
+    public function setForeignKey($table, $columns, $refTable, $refColumns, $delete = 'CASCADE', $update = 'CASCADE')
+    {
         $name = $this->formatForeignKeyName($table, $refTable);
         parent::addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
-
     }
 
     public function formatForeignKeyName($tableNameForeign, $tableNamePrimary)
