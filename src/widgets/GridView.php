@@ -35,7 +35,7 @@ class GridView extends \kartik\grid\GridView
         'fontAwesome'      => true,
         'showConfirmAlert' => true,
         'target'           => '_blank',
-        'icon'             => 'export'
+        'icon'             => 'fa fa-download'
     ];
 
     public $layout            = "<div class='grid-view-toolbar'>{toolbar}</div>{items}{pager}{summary}";
@@ -45,7 +45,7 @@ class GridView extends \kartik\grid\GridView
     ];
 
     public $pager = [
-        'options'        => ['class' => 'pagination pagination-outline'],
+        'options'        => ['class' => 'pagination pagination-space'],
         'nextPageLabel'  => '<i class="fa fa-angle-right"></i>',
         'prevPageLabel'  => '<i class="fa fa-angle-left"></i>',
         'firstPageLabel' => '<i class="fa fa-angle-double-left"></i>',

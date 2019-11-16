@@ -17,7 +17,7 @@ class ActionColumn extends \kartik\grid\ActionColumn
     public $template      = '<div class="action-column">{update-ajax} {delete-ajax}</div>';
     public $action;
     public $keyName       = 'id';
-    public $header        = '<i class="icon ion-navicon-round"></i>';
+    public $header        = '<i class="ion ios-setting-outline"></i>';
     public $width         = '120px';
     public $pjax          = false;
     public $updateOptions = ['label' => '<i class="btn btn-link text-info p-0 fas fa-edit"></i>'];
