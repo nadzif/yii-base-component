@@ -1,51 +1,32 @@
 <?php
 
 /**
- * @var \yii\base\View               $this
+ * @var \yii\base\View                $this
  *
  * @var \nadzif\base\models\GridModel $gridModel
- * @var \yii\data\ActiveDataProvider $dataProvider
- * @var array                        $columns
- * @var array                        $pageSizeData
- * @var bool                         $showCreateButton
- * @var bool                         $showToggleData
- * @var array                        $createConfig
- * @var array                        $toolbars
+ * @var array                         $gridViewConfig
+ * @var array                         $pageSizeData
+ * @var array                         $showCreateButton
+ * @var array                         $createConfig
  */
 
+use nadzif\base\components\ActionColumn;
 use nadzif\base\models\FormModel;
 use nadzif\base\widgets\GridView;
 use kartik\select2\Select2;
-use rmrevin\yii\fontawesome\FontAwesome;
 use rmrevin\yii\ionicon\Ion;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /** @var GridView $gridView */
-$gridView = new GridView([
-    'dataProvider'  => $dataProvider,
-    'filterModel'   => $gridModel,
-    'columns'       => $columns,
-    'toggleData'    => $showToggleData,
-]);
+$gridView   = new GridView($gridViewConfig);
+$gridViewId = $gridView->getId();
 
-$gridViewId   = $gridView->getId();
-$initWrapper  = isset($wrapper) ? $wrapper : true;
-$submitAjax   = isset($submitAjax) ? $submitAjax : true;
-$enctype      = isset($createConfig['formEnctype']) ? $createConfig['formEnctype'] : false;
-$gridToolbars = isset($toolbars) ? $toolbars : [];
-
-
-foreach ($gridToolbars as $toolbar) {
-    echo $toolbar;
-}
-
-if ($initWrapper) {
-    echo Html::beginTag('div', ['class' => 'br-section-wrapper']);
-}
+echo Html::beginTag('div', ['class' => 'grid-container']);
 
 echo Html::beginTag('div', ['class' => 'datatables-tools']);
 echo Html::beginTag('div', ['id' => $gridViewId . '-filters', 'class' => 'select2-wrap']);
+
 echo Select2::widget([
     'model'        => $gridModel,
     'attribute'    => 'pageSize',
@@ -61,39 +42,20 @@ echo Select2::widget([
 echo Html::endTag('div');
 
 
-if ($showCreateButton) {
+if ($createConfig) {
+    /** @var FormModel $model */
+    $model = $createConfig['model'];
+    $model->setScenario(FormModel::SCENARIO_CREATE);
 
-    if (isset($createConfig['button'])) {
-        if (isset($createConfig['showDefaultCreateButton']) && $createConfig['showDefaultCreateButton']) {
-            $model = $createConfig['model'];
-            $model->setScenario(FormModel::SCENARIO_CREATE);
-            echo $this->render('@backend/actions/layouts/_form', [
-                'model'        => $model,
-                'asModal'      => true,
-                'modalOptions' => ArrayHelper::getValue($createConfig, 'modal', []),
-                'submitAjax'   => $submitAjax,
-                'actionUrl'    => $createConfig['actionUrl'],
-                'gridViewId'   => $gridViewId,
-                'enctype'      => $enctype
-            ]);
-        }
+    $_createConfig = [
+        'model'            => $model,
+        'modalConfig'      => [],
+        'activeFormConfig' => [],
+        'actionUrl'        => $createConfig['actionUrl'],
+        'gridViewId'       => $gridViewId,
+    ];
 
-        echo $createConfig['button'];
-    } else {
-        /** @var FormModel $model */
-        $model = $createConfig['model'];
-        $model->setScenario(FormModel::SCENARIO_CREATE);
-
-        echo $this->render('@nadzif/base/layouts/ajax/_form', [
-            'model'        => $model,
-            'asModal'      => true,
-            'modalOptions' => ArrayHelper::getValue($createConfig, 'modal', []),
-            'submitAjax'   => $submitAjax,
-            'actionUrl'    => $createConfig['actionUrl'],
-            'gridViewId'   => $gridViewId,
-            'enctype'      => $enctype
-        ]);
-    }
+    echo $this->render('@nadzif/base/layouts/ajax/_form', ArrayHelper::merge($_createConfig, $createConfig));
 }
 
 
@@ -117,13 +79,10 @@ echo Html::button(Ion::icon(Ion::_ANDROID_SYNC), [
 
 echo Html::endTag('div');
 
-
 $gridView->run();
 
-if ($initWrapper) {
-    echo Html::endTag('div');
-}
+echo Html::endTag('div');
 
-if ($gridModel->actionColumn && $gridModel->actionColumnClass == \nadzif\base\components\ActionColumn::className()) {
+if ($gridModel->actionColumn && $gridModel->actionColumnClass == ActionColumn::className()) {
     echo Html::tag('div', false, ['id' => 'grid-update-section', 'style' => 'width:0; height:0; overflow: hidden;']);
 }

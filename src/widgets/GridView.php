@@ -45,6 +45,7 @@ class GridView extends \kartik\grid\GridView
     ];
 
     public $pager = [
+        'options'        => ['class' => 'pagination pagination-outline'],
         'nextPageLabel'  => '<i class="fa fa-angle-right"></i>',
         'prevPageLabel'  => '<i class="fa fa-angle-left"></i>',
         'firstPageLabel' => '<i class="fa fa-angle-double-left"></i>',

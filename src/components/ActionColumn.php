@@ -30,8 +30,7 @@ class ActionColumn extends \kartik\grid\ActionColumn
         }
 
         if (is_callable($this->urlCreator)) {
-            return call_user_func($this->urlCreator, $action, $model, $key,
-                $index, $this);
+            return call_user_func($this->urlCreator, $action, $model, $key, $index, $this);
         }
 
         $params    = is_array($key) ? $key : [$this->keyName => (string)$key];
@@ -51,8 +50,8 @@ class ActionColumn extends \kartik\grid\ActionColumn
     {
         if ($name === 'update-ajax') {
             $this->buttons[$name] = function ($url) use ($name, $title, $icon) {
-                return Html::button(false, [
-                    'class'   => 'btn btn-link text-info p-0 ' . $icon,
+                return Html::button('<i class="' . $icon . '"></i>', [
+                    'class'   => 'btn btn-link text-info p-0',
                     'titile'  => $title,
                     'onclick' => new JsExpression(
                         '(function(e){
@@ -74,6 +73,7 @@ class ActionColumn extends \kartik\grid\ActionColumn
                 return Html::a('<i class="' . $icon . '"></i>', '#', [
                     'title'      => $title,
                     'aria-label' => $title,
+                    'class'      => 'text-info',
                     'onclick'    => "
                                 var a = this;
                                 if (confirm('$confirmationMessage')) {

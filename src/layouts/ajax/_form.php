@@ -3,10 +3,9 @@
 /**
  * @var \nadzif\base\models\FormModel $model
  * @var string                        $scenario
- * @var bool                          $asModal
- * @var bool                          $ajaxAction
  * @var array|string                  $actionUrl
- * @var array                         $modalOptions
+ * @var array                         $modalConfig
+ * @var array                         $activeFormConfig
  */
 
 use nadzif\base\widgets\Modal;
@@ -19,25 +18,24 @@ use yii\helpers\Url;
 use yii\web\JsExpression;
 use \yii\helpers\StringHelper;
 
-$modalTitle       = ArrayHelper::getValue($modalOptions, 'title', Yii::t('app', 'Form'));
-$modalDescription = ArrayHelper::getValue($modalOptions, 'description', false);
+$modalTitle       = ArrayHelper::getValue($modalConfig, 'title', Yii::t('app', 'Form'));
+$modalDescription = ArrayHelper::getValue($modalConfig, 'description', false);
 
 $scenario  = $model->getScenario();
-$enctype   = isset($enctype) ? $enctype : false;
 $modelName = StringHelper::basename(get_class($model));
-$modal     = Modal::begin([
+
+$_modalConfig = [
     'id'    => 'modal-' . $modelName . '-' . $scenario,
     'title' => Html::tag('h6', $modalTitle, ['class' => 'tx-14 mg-b-0 tx-uppercase tx-inverse tx-bold'])
-]);
-
-
-$activeFormOptions = [
-    'id'      => $modelName . $scenario . '-form-' . time(),
-    'action'  => $actionUrl,
-    'options' => ['enctype' => $enctype]
 ];
 
-$form      = ActiveForm::begin($activeFormOptions);
+$_activeFormConfig = [
+    'id'     => $modelName . $scenario . '-form-' . time(),
+    'action' => $actionUrl
+];
+
+$modal     = Modal::begin(ArrayHelper::merge($_modalConfig, $modalConfig));
+$form      = ActiveForm::begin(ArrayHelper::merge($_activeFormConfig, $activeFormConfig));
 $formRules = $model->formRules();
 
 foreach ($formRules as $attributeName => $attributeOptions) {

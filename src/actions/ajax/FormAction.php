@@ -12,7 +12,6 @@ namespace nadzif\base\actions\ajax;
 use nadzif\base\models\FormModel;
 use yii\base\Action;
 use yii\db\ActiveQuery;
-use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
 
@@ -55,12 +54,12 @@ class FormAction extends Action
     public function run()
     {
 
+        /** @var FormModel $formModel */
+        $formModel           = $this->formModel;
+        $formModel->scenario = $this->scenario;
+
         if ($this->scenario == FormModel::SCENARIO_UPDATE) {
             $requestParam = \Yii::$app->request->get($this->key);
-
-            /** @var FormModel $formModel */
-            $formModel           = $this->formModel;
-            $formModel->scenario = $this->scenario;
 
             /** @var ActiveQuery $query */
             $query            = $this->query;
@@ -102,15 +101,10 @@ class FormAction extends Action
 
                 } else {
                     $pageOptions = [
-                        'model'        => $formModel,
-                        'asModal'      => true,
-                        'modalOptions' => [
-                            'title' => \Yii::t('app', 'Update {tableName}', [
-                                'tableName' => $formModel->model->tableSchema->name
-                            ])
-                        ],
-                        'submitAjax'   => true,
-                        'actionUrl'    => [$this->controller->getRoute(), $this->key => $requestParam],
+                        'model'            => $formModel,
+                        'modalConfig'      => ['title' => $formModel->model->tableSchema->name],
+                        'activeFormConfig' => [],
+                        'actionUrl'        => [$this->controller->getRoute(), $this->key => $requestParam],
                     ];
 
                     if ($this->refreshGrid) {
@@ -124,11 +118,6 @@ class FormAction extends Action
 
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-        /** @var FormModel $formModel */
-        $formModel        = new $this->formClass;
-        $formModel->model = $this->model;
-
-        $formModel->setScenario($this->scenario);
 
         if ($formModel->load(\Yii::$app->request->post())) {
 

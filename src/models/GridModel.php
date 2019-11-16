@@ -9,7 +9,7 @@
 namespace nadzif\base\models;
 
 
-use backend\widgets\GridView;
+use nadzif\base\widgets\GridView;
 use nadzif\base\widgets\Select2;
 use yii\base\InvalidConfigException;
 use yii\data\ActiveDataProvider;
@@ -274,7 +274,6 @@ class GridModel extends \yii\db\ActiveRecord
             $this->_columns[$attribute]['filterWidgetOptions'] = $filterWidgetOptions;
         }
 
-
         if (isset($filterOptions['columnOptions'])) {
             foreach ($filterOptions['columnOptions'] AS $optionsKey => $columnOption) {
                 $this->_columns[$attribute][$optionsKey] = $columnOption;
@@ -325,13 +324,8 @@ class GridModel extends \yii\db\ActiveRecord
             'query'      => $query,
             'pagination' => ['pageSize' => $this->pageSize,],
             'key'        => $this->sortKey,
+            'sort'       => ['defaultOrder' => ['createdAt' => SORT_DESC]]
         ];
-
-//			if ($this->hasAttribute('createdAt')) {
-//				$activeDataProviderConfig['sort'] =
-//					['defaultOrder' => ['createdAt' => SORT_DESC]];
-//
-//			}
 
         $dataProvider = new ActiveDataProvider($activeDataProviderConfig);
 
@@ -372,7 +366,6 @@ class GridModel extends \yii\db\ActiveRecord
             }
         }
 
-
         return $dataProvider;
     }
 
@@ -399,7 +392,6 @@ class GridModel extends \yii\db\ActiveRecord
         }
 
         if ($this->expandRowColumn) {
-
             $defaultExpandRowColumnOptions = [
                 'expandIcon'              => '<span class="fas fa-expand text-info"></span>',
                 'collapseIcon'            => '<span class="fas fa-compress text-info"></span>',
@@ -413,7 +405,6 @@ class GridModel extends \yii\db\ActiveRecord
                 ['class' => $this->expandRowColumnClass], $defaultExpandRowColumnOptions, $this->expandRowColumnOptions
             );
         }
-
 
         return $columns;
     }
