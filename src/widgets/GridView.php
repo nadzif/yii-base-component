@@ -22,16 +22,15 @@ class GridView extends \kartik\grid\GridView
     const ICON_ACTIVE   = '<span class="ion ion-checkmark text-success"></span>';
     const ICON_INACTIVE = '<span class="ion ion-close text-danger"></span>';
 
-    public $filterPosition = \kartik\grid\GridView::FILTER_POS_HEADER;
-    public $bordered       = true;
-    public $striped        = true;
-    public $condensed      = true;
-    public $hover          = true;
-    public $pjax           = true;
-    public $responsiveWrap = true;
-    public $resizableColumns  = true;
+    public $filterPosition   = \kartik\grid\GridView::FILTER_POS_HEADER;
+    public $bordered         = true;
+    public $striped          = true;
+    public $condensed        = true;
+    public $hover            = true;
+    public $pjax             = true;
+    public $responsiveWrap   = true;
+    public $resizableColumns = true;
 
-    public $showExportAll = true;
     public $export = [
         'fontAwesome'      => true,
         'showConfirmAlert' => true,
@@ -51,46 +50,5 @@ class GridView extends \kartik\grid\GridView
         'firstPageLabel' => '<i class="fa fa-angle-double-left"></i>',
         'lastPageLabel'  => '<i class="fa fa-angle-double-right"></i>',
     ];
-
-    public function run()
-    {
-        parent::run();
-    }
-
-    protected function initLayout()
-    {
-        Html::addCssClass($this->filterRowOptions, 'skip-export');
-        if ($this->resizableColumns && $this->persistResize) {
-            $key                                                 =
-                empty($this->resizeStorageKey) ? \Yii::$app->user->id : $this->resizeStorageKey;
-            $gridId                                              =
-                empty($this->options['id']) ? $this->getId() : $this->options['id'];
-            $this->containerOptions['data-resizable-columns-id'] =
-                (empty($key) ? "kv-{$gridId}" : "kv-{$key}-{$gridId}");
-        }
-        if ($this->hideResizeMobile) {
-            Html::addCssClass($this->options, 'hide-resize');
-        }
-        //----------------------------------------------stream export------------------------------------------------------------
-
-        //----------------------------------------------------------------------------------------------------------
-
-        $this->replaceLayoutTokens([
-            '{toolbarContainer}' => $this->renderToolbarContainer(),
-            '{toolbar}'          => $this->renderToolbar(),
-            '{export}'           => (isset($exportAll) ? $exportAll : false) . $this->renderExport(),
-            '{toggleData}'       => $this->renderToggleData(),
-            '{items}'            => Html::tag('div', '{items}', $this->containerOptions),
-        ]);
-
-        if (is_array($this->replaceTags) && !empty($this->replaceTags)) {
-            foreach ($this->replaceTags as $key => $value) {
-                if ($value instanceof \Closure) {
-                    $value = call_user_func($value, $this);
-                }
-                $this->layout = str_replace($key, $value, $this->layout);
-            }
-        }
-    }
 
 }

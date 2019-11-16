@@ -1,15 +1,15 @@
 <?php
 
 /**
- * @var \nadzif\base\FormModel $model
- * @var string                 $scenario
- * @var bool                   $asModal
- * @var bool                   $ajaxAction
- * @var array|string           $actionUrl
- * @var array                  $modalOptions
+ * @var \nadzif\base\models\FormModel $model
+ * @var string                        $scenario
+ * @var bool                          $asModal
+ * @var bool                          $ajaxAction
+ * @var array|string                  $actionUrl
+ * @var array                         $modalOptions
  */
 
-use nadzif\base\Modal;
+use nadzif\base\widgets\Modal;
 use demogorgorn\ajax\AjaxSubmitButton;
 use rmrevin\yii\ionicon\Ion;
 use yii\bootstrap4\Html;

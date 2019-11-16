@@ -3,7 +3,7 @@
 /**
  * @var \yii\base\View               $this
  *
- * @var \nadzif\base\GridModel       $gridModel
+ * @var \nadzif\base\models\GridModel $gridModel
  * @var \yii\data\ActiveDataProvider $dataProvider
  * @var array                        $columns
  * @var array                        $pageSizeData
@@ -17,6 +17,7 @@ use nadzif\base\models\FormModel;
 use nadzif\base\widgets\GridView;
 use kartik\select2\Select2;
 use rmrevin\yii\fontawesome\FontAwesome;
+use rmrevin\yii\ionicon\Ion;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
@@ -26,7 +27,6 @@ $gridView = new GridView([
     'filterModel'   => $gridModel,
     'columns'       => $columns,
     'toggleData'    => $showToggleData,
-    'showExportAll' => isset($showExportAll) ? $showExportAll : true
 ]);
 
 $gridViewId   = $gridView->getId();
@@ -62,6 +62,7 @@ echo Html::endTag('div');
 
 
 if ($showCreateButton) {
+
     if (isset($createConfig['button'])) {
         if (isset($createConfig['showDefaultCreateButton']) && $createConfig['showDefaultCreateButton']) {
             $model = $createConfig['model'];
@@ -83,7 +84,7 @@ if ($showCreateButton) {
         $model = $createConfig['model'];
         $model->setScenario(FormModel::SCENARIO_CREATE);
 
-        echo $this->render('@nadzif/base/layouts/_form', [
+        echo $this->render('@nadzif/base/layouts/ajax/_form', [
             'model'        => $model,
             'asModal'      => true,
             'modalOptions' => ArrayHelper::getValue($createConfig, 'modal', []),
@@ -104,12 +105,12 @@ $reloadPjaxJS = <<<JS
    (function () { $.pjax.reload({container:"#$gridViewId-pjax"}); })();
 JS;
 
-echo Html::button(FontAwesome::icon(FontAwesome::_FILTER), [
+echo Html::button(Ion::icon(Ion::_ANDROID_OPTIONS), [
     'class'   => 'btn btn-info',
     'onclick' => $filterToggleButton
 ]);
 
-echo Html::button(FontAwesome::icon(FontAwesome::_SYNC), [
+echo Html::button(Ion::icon(Ion::_ANDROID_SYNC), [
     'class'   => 'btn btn-info',
     'onclick' => $reloadPjaxJS
 ]);
