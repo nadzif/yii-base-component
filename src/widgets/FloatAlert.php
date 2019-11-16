@@ -17,6 +17,12 @@ use yii\helpers\Html;
 class FloatAlert extends Widget
 {
 
+    const TYPE_SUCCESS = 'success';
+    const TYPE_DANGER  = 'danger';
+    const TYPE_INFO    = 'info';
+    const TYPE_WARNING = 'warning';
+    const TYPE_SOLID   = 'solid';
+
     const ALERT_SUCCESS = 'alert-success';
     const ALERT_DANGER  = 'alert-danger';
     const ALERT_INFO    = 'alert-info';

@@ -9,9 +9,12 @@
 namespace nadzif\base\actions\ajax;
 
 
+use nadzif\base\helpers\StringHelper;
 use nadzif\base\models\FormModel;
+use nadzif\base\widgets\FloatAlert;
 use yii\base\Action;
 use yii\db\ActiveQuery;
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\helpers\Json;
 
@@ -23,33 +26,18 @@ class FormAction extends Action
     public $query;
     public $key = 'id';
 
-    public $successAlert;
-    public $errorMessage;
-    public $showError = true;
+    public $successTitle;
+    public $successMessage;
+    public $failedTitle;
+    public $failedMessage;
 
     public $view       = '@nadzif/base/layouts/ajax/_form';
     public $viewParams = [];
 
+    public $condition = true;
+
     public $refreshGrid = true;
     public $gridViewId;
-
-    public function init()
-    {
-
-        if (!isset($this->successAlert)) {
-            $this->successAlert[] = [
-                'type'    => 'success',
-                'title'   => \Yii::t('app', 'Create Success'),
-                'message' => \Yii::t('app', 'Record has been Created.'),
-            ];
-        }
-
-        if (!isset($this->errorMessage)) {
-            $this->errorMessage = \Yii::t('app', 'Failed while creating record.');
-        }
-
-        parent::init();
-    }
 
     public function run()
     {
@@ -58,103 +46,114 @@ class FormAction extends Action
         $formModel           = $this->formModel;
         $formModel->scenario = $this->scenario;
 
-        if ($this->scenario == FormModel::SCENARIO_UPDATE) {
-            $requestParam = \Yii::$app->request->get($this->key);
+        $isUpdate = $this->scenario == FormModel::SCENARIO_UPDATE;
+
+        if ($isUpdate) {
+            $action = [
+                'present'    => \Yii::t('app', 'update'),
+                'past'       => \Yii::t('app', 'updated'),
+                'continuous' => \Yii::t('app', 'updating'),
+            ];
+        } else {
+            $action = [
+                'present'    => \Yii::t('app', 'create'),
+                'past'       => \Yii::t('app', 'created'),
+                'continuous' => \Yii::t('app', 'creating'),
+            ];
+        }
+        $requestParam = \Yii::$app->request->get($this->key);
+
+        if ($isUpdate) {
 
             /** @var ActiveQuery $query */
             $query            = $this->query;
             $formModel->model = $query->andWhere([$this->key => $requestParam])->one();
 
-            $formModel->loadAttributes();
-
-            if (\Yii::$app->request->isAjax) {
-                if ($formModel->load(\Yii::$app->request->post())) {
-                    if ($formModel->save()) {
-                        return Json::encode(['data' => ['alert' => $this->successAlert]]);
-                    } else {
-                        $errorMessage = '';
-                        foreach ($formModel->getErrors() as $attribute => $error) {
-                            $errorMessage .= $formModel->getAttributeLabel($attribute) . '<br>';
-                            $errorMessage .= Html::ul($error);
-                            $errorMessage .= '<br>';
-                        }
-
-                        $errorAlerts = [
-                            [
-                                'type'    => 'info',
-                                'message' => $errorMessage
-                            ]
-                        ];
-
-                        if ($this->showError) {
-                            $errorAlerts[] = [
-                                'type'    => 'danger',
-                                'title'   => \Yii::t('app', 'Update Failed'),
-                                'message' => $this->errorMessage
-                            ];
-                        }
-
-                        return Json::encode([
-                            'data' => ['alert' => $errorAlerts]
-                        ]);
-                    }
-
-                } else {
-                    $pageOptions = [
-                        'model'            => $formModel,
-                        'modalConfig'      => ['title' => $formModel->model->tableSchema->name],
-                        'activeFormConfig' => [],
-                        'actionUrl'        => [$this->controller->getRoute(), $this->key => $requestParam],
-                    ];
-
-                    if ($this->refreshGrid) {
-                        $pageOptions['gridViewId'] = $this->gridViewId;
-                    }
-
-                    return $this->controller->renderAjax($this->view, $pageOptions);
-                }
-            }
-        }
-
-
-        ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-        if ($formModel->load(\Yii::$app->request->post())) {
-
-            if ($formModel->save()) {
-                return Json::encode(['data' => ['alert' => $this->successAlert]]);
-
+            if ($formModel->model) {
+                $formModel->loadAttributes();
             } else {
-
-                $errorMessage = '';
-                foreach ($formModel->getErrors() as $attribute => $error) {
-                    $errorMessage .= $formModel->getAttributeLabel($attribute) . '<br>';
-                    $errorMessage .= Html::ul($error);
-                    $errorMessage .= '<br>';
-                }
-
-                $errorAlerts = [
-                    [
-                        'type'    => 'warning',
-                        'title'   => \Yii::t('app', 'Action Error'),
-                        'message' => $errorMessage
-                    ]
-                ];
-
-                if ($this->showError) {
-                    $errorAlerts[] = [
-                        'type'    => 'danger',
-                        'title'   => \Yii::t('app', 'Create Failed'),
-                        'message' => $this->errorMessage
-                    ];
-                }
-
                 return Json::encode([
-                    'data' => ['alert' => $errorAlerts]
+                    'data' => [
+                        'alert' => [
+                            [
+                                'type'    => 'warning',
+                                'title'   => $this->failedTitle ?: \Yii::t('app', 'Data Not Found'),
+                                'message' => $this->failedMessage
+                                    ?: \Yii::t('app', 'Cannot find selected item for update.')
+                            ]
+                        ]
+                    ]
                 ]);
             }
         }
 
+        if (\Yii::$app->request->isAjax) {
+            $alertData = [];
+            if ($formModel->load(\Yii::$app->request->post())) {
+                $modelAttributes = $formModel->attributes;
+                if ($this->condition && $formModel->save()) {
+                    $title   = StringHelper::replace(
+                        $this->successTitle,
+                        ucwords(\Yii::t('app', '{present} Success', $action)),
+                        $modelAttributes
+                    );
+                    $message = StringHelper::replace(
+                        $this->successMessage,
+                        \Yii::t('app', 'Record {past} successfully.', $action),
+                        $modelAttributes
+                    );
+
+                    $alertData[] = ['type' => FloatAlert::TYPE_SUCCESS, 'title' => $title, 'message' => $message];
+                } else {
+                    if ($formModel->hasErrors()) {
+                        $formErrors = '';
+                        foreach ($formModel->getErrors() as $attribute => $error) {
+                            $formErrors .= $formModel->getAttributeLabel($attribute) . '<br>';
+                            $formErrors .= Html::ul($error);
+                            $formErrors .= '<br>';
+                        }
+
+                        $alertData[] = [
+                            'type'    => FloatAlert::TYPE_WARNING,
+                            'title'   => \Yii::t('app', 'Validation Failed'),
+                            'message' => $formErrors
+                        ];
+                    }
+
+
+                    $title   = StringHelper::replace(
+                        $this->failedTitle,
+                        ucwords(\Yii::t('app', '{present} Failed', $action)),
+                        $modelAttributes
+                    );
+                    $message = StringHelper::replace(
+                        $this->failedMessage,
+                        \Yii::t('app', 'Failed while {continuous} record.', $action),
+                        $modelAttributes
+                    );
+
+                    $alertData[] = [
+                        'type'    => 'danger',
+                        'title'   => $title,
+                        'message' => $message
+                    ];
+                }
+
+                return Json::encode(['data' => ['alert' => $alertData]]);
+            }
+        }
+
+        $_viewParams = [
+            'formModel'        => $formModel,
+            'activeFormConfig' => [],
+            'actionUrl'        => [$this->controller->getRoute(), $this->key => $requestParam],
+        ];
+
+        if ($this->refreshGrid) {
+            $_viewParams['gridViewId'] = $this->gridViewId;
+        }
+
+        return $this->controller->renderAjax($this->view, ArrayHelper::merge($_viewParams, $this->viewParams));
 
     }
 }

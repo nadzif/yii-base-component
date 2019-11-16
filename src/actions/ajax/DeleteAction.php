@@ -9,6 +9,8 @@
 namespace nadzif\base\actions\ajax;
 
 
+use nadzif\base\helpers\StringHelper;
+use nadzif\base\widgets\FloatAlert;
 use yii\base\Action;
 use yii\db\ActiveRecord;
 use yii\helpers\Json;
@@ -34,58 +36,52 @@ class DeleteAction extends Action
         /** @var ActiveRecord $model */
         $model = $newModel::find()->where([$this->key => $requestParam])->one();
 
-        if (!$model) {
-            return Json::encode([
-                'data' => [
-                    'alert' => [
-                        [
-                            'type'    => 'warning',
-                            'title'   => $this->failedTitle ?: \Yii::t('app', 'Data Not Found'),
-                            'message' => $this->failedMessage ?: \Yii::t('app', 'Cannot find selected item for delete.')
-                        ]
-                    ]
-                ]
-            ]);
-        }
-
-        if ($this->condition && $model->delete()) {
+        if ($model) {
             $modelAttributes = $model->attributes;
-
-            if ($this->successTitle) {
-                $successTitle = str_replace(['{', '}',], '', strtr($this->successTitle, $modelAttributes));
+            if ($this->condition && $model->delete()) {
+                $type    = FloatAlert::TYPE_SUCCESS;
+                $title   = StringHelper::replace(
+                    $this->successTitle,
+                    \Yii::t('app', 'Delete Success'),
+                    $modelAttributes
+                );
+                $message = StringHelper::replace(
+                    $this->successTitle,
+                    \Yii::t('app', 'Record deleted successfully.'),
+                    $modelAttributes
+                );
             } else {
-                $successTitle = \Yii::t('app', 'Delete Success');
+                $type    = FloatAlert::TYPE_DANGER;
+                $title   = StringHelper::replace(
+                    $this->failedTitle,
+                    \Yii::t('app', 'Failed while deleting record.'),
+                    $modelAttributes
+                );
+                $message = StringHelper::replace(
+                    $this->failedMessage,
+                    \Yii::t('app', 'Failed while deleting record.'),
+                    $modelAttributes
+                );
             }
-
-            if ($this->successMessage) {
-                $successMessage = str_replace(['{', '}',], '', strtr($this->successMessage, $modelAttributes));
-            } else {
-                $successMessage = \Yii::t('app', 'Record has been deleted.');
-            }
-
-            return Json::encode([
-                'data' => [
-                    'alert' => [
-                        [
-                            'type'    => 'success',
-                            'title'   => $successTitle,
-                            'message' => $successMessage
-                        ]
-                    ]
-                ]
-            ]);
         } else {
-            return Json::encode([
-                'data' => [
-                    'alert' => [
-                        [
-                            'type'    => 'danger',
-                            'title'   => $this->failedTitle ?: \Yii::t('app', 'Delete Failed'),
-                            'message' => $this->failedMessage ?: \Yii::t('app', 'Failed while deleting record.')
-                        ]
+            $type    = FloatAlert::TYPE_WARNING;
+            $title   = $this->failedTitle ?: \Yii::t('app', 'Data Not Found');
+            $message = $this->failedMessage ?: \Yii::t('app', 'Cannot find selected item for delete.');
+        }
+
+
+        return Json::encode([
+            'data' => [
+                'alert' => [
+                    [
+                        'type'    => $type,
+                        'title'   => $title,
+                        'message' => $message
                     ]
                 ]
-            ]);
-        }
+            ]
+        ]);
     }
+
+
 }

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @var \nadzif\base\models\FormModel $model
+ * @var \nadzif\base\models\FormModel $formModel
  * @var string                        $scenario
  * @var array|string                  $actionUrl
  * @var array                         $modalConfig
@@ -21,8 +21,8 @@ use \yii\helpers\StringHelper;
 $modalTitle       = ArrayHelper::getValue($modalConfig, 'title', Yii::t('app', 'Form'));
 $modalDescription = ArrayHelper::getValue($modalConfig, 'description', false);
 
-$scenario  = $model->getScenario();
-$modelName = StringHelper::basename(get_class($model));
+$scenario  = $formModel->getScenario();
+$modelName = StringHelper::basename(get_class($formModel));
 
 $_modalConfig = [
     'id'    => 'modal-' . $modelName . '-' . $scenario,
@@ -36,18 +36,18 @@ $_activeFormConfig = [
 
 $modal     = Modal::begin(ArrayHelper::merge($_modalConfig, $modalConfig));
 $form      = ActiveForm::begin(ArrayHelper::merge($_activeFormConfig, $activeFormConfig));
-$formRules = $model->formRules();
+$formRules = $formModel->formRules();
 
 foreach ($formRules as $attributeName => $attributeOptions) {
-    if (!ArrayHelper::isIn($attributeName, $model->scenarios()[$scenario])) {
+    if (!ArrayHelper::isIn($attributeName, $formModel->scenarios()[$scenario])) {
         continue;
     }
 
     $inputType    = ArrayHelper::getValue($attributeOptions, 'inputType', false);
     $inputOptions = ArrayHelper::getValue($attributeOptions, 'inputOptions', []);
 
-    $inputId   = $model->scenario . '-' . Html::getInputId($model, $attributeName);
-    $formField = $form->field($model, $attributeName);
+    $inputId   = $formModel->scenario . '-' . Html::getInputId($formModel, $attributeName);
+    $formField = $form->field($formModel, $attributeName);
 
     switch ($attributeOptions['inputType']) {
         case 'text':
@@ -64,8 +64,8 @@ foreach ($formRules as $attributeName => $attributeOptions) {
             break;
         default:
             if (ArrayHelper::isIn($attributeOptions['inputType'], ['backend\widgets\Select2'])) {
-                if ($model->$attributeName) {
-                    $inputOptions['initValueText'] = $model->$attributeName;
+                if ($formModel->$attributeName) {
+                    $inputOptions['initValueText'] = $formModel->$attributeName;
                 }
             }
             $inputOptions['id']            = $inputId;
@@ -77,11 +77,11 @@ foreach ($formRules as $attributeName => $attributeOptions) {
     echo $formField;
 }
 
-switch ($model->scenario) {
-    case $model::SCENARIO_CREATE:
+switch ($formModel->scenario) {
+    case $formModel::SCENARIO_CREATE:
         $submitLabel = Yii::t('app', 'Create');
         break;
-    case $model::SCENARIO_UPDATE:
+    case $formModel::SCENARIO_UPDATE:
         $submitLabel = Yii::t('app', 'Update');
         break;
     default:

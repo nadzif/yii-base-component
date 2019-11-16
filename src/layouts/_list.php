@@ -11,7 +11,6 @@
  */
 
 use nadzif\base\components\ActionColumn;
-use nadzif\base\models\FormModel;
 use nadzif\base\widgets\GridView;
 use kartik\select2\Select2;
 use rmrevin\yii\ionicon\Ion;
@@ -43,15 +42,10 @@ echo Html::endTag('div');
 
 
 if ($createConfig) {
-    /** @var FormModel $model */
-    $model = $createConfig['model'];
-    $model->setScenario(FormModel::SCENARIO_CREATE);
 
     $_createConfig = [
-        'model'            => $model,
         'modalConfig'      => [],
         'activeFormConfig' => [],
-        'actionUrl'        => $createConfig['actionUrl'],
         'gridViewId'       => $gridViewId,
     ];
 

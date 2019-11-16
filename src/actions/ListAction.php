@@ -44,13 +44,13 @@ class ListAction extends Action
 
     public function init()
     {
-        if (!isset($this->createConfig['model']) && !isset($this->createConfig['button'])) {
-            throw new InvalidConfigException(\Yii::t('app', 'Set model'));
-
-            if (!isset($this->createConfig['button']) && !isset($this->createConfig['actionUrl'])) {
-                throw new InvalidConfigException(\Yii::t('app', 'Set url action for create'));
-            }
-        }
+//        if (!isset($this->createConfig['model']) && !isset($this->createConfig['button'])) {
+//            throw new InvalidConfigException(\Yii::t('app', 'Set model'));
+//
+//            if (!isset($this->createConfig['button']) && !isset($this->createConfig['actionUrl'])) {
+//                throw new InvalidConfigException(\Yii::t('app', 'Set url action for create'));
+//            }
+//        }
 
         if ($this->gridModel === null) {
             throw new InvalidConfigException(get_class($this) . '::$gridModel must be set.');
