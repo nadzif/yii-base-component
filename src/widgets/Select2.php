@@ -9,9 +9,9 @@
 namespace nadzif\base\widgets;
 
 
-use http\Url;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use yii\web\JsExpression;
 
 class Select2 extends \kartik\select2\Select2
@@ -62,7 +62,7 @@ class Select2 extends \kartik\select2\Select2
                 'ajax'               => [
                     'url'      => Url::to($this->ajaxUrl),
                     'dataType' => 'json',
-                    'data'     => new JsExpression('function(params) { return {q:params.term}; }')
+                    'data'     => new JsExpression('function(params) { return {search:params.term}; }')
                 ],
                 'escapeMarkup'       => new JsExpression('function (markup) { return markup; }'),
                 'templateResult'     => new JsExpression('function (data) { return data.text; }'),

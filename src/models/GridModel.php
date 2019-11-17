@@ -333,15 +333,17 @@ class GridModel extends \yii\db\ActiveRecord
             return $dataProvider;
         }
 
-        foreach ($this->getColumns() as $attributeKey => $data) {
+        $gridColumns = $this->getColumns();
+        $queryRules  = $this->queryRules();
+        foreach ($gridColumns as $attributeKey => $data) {
             if (isset($data['class'])) {
                 continue;
             }
 
             foreach ($this->_filters[$attributeKey] as $filter) {
                 $dataProvider->sort->attributes[$attributeKey] = [
-                    'asc'  => [$this->queryRules()[$attributeKey] => SORT_ASC],
-                    'desc' => [$this->queryRules()[$attributeKey] => SORT_DESC],
+                    'asc'  => [$queryRules[$attributeKey] => SORT_ASC],
+                    'desc' => [$queryRules[$attributeKey] => SORT_DESC],
                 ];
 
                 if ($filter[0] != 'between') {
@@ -360,7 +362,6 @@ class GridModel extends \yii\db\ActiveRecord
                         }
                     }
                 }
-
 
                 $query->andFilterWhere($filter);
             }

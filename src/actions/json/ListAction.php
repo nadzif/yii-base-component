@@ -10,17 +10,19 @@ namespace nadzif\base\actions\json;
 
 
 use yii\base\Action;
+use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 
 class ListAction extends Action
 {
     public $queryParamKey = 'search';
-    public $idKey         = 'id';
     public $limit         = 10;
 
     public $activeRecordClass;
     public $idAttribute;
     public $textAttribute;
+
+    public $condition = [];
 
     public function init()
     {
@@ -28,11 +30,9 @@ class ListAction extends Action
         \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
     }
 
-
     public function run()
     {
-        $q  = \Yii::$app->request->get($this->queryParamKey);
-        $id = \Yii::$app->request->get($this->idKey);
+        $q = \Yii::$app->request->get($this->queryParamKey);
 
         $out = ['results' => ['id' => '', 'text' => '']];
 
@@ -41,17 +41,18 @@ class ListAction extends Action
         $textAttribute = $this->textAttribute;
 
         if (!is_null($q)) {
-            $model = $activeRecord::find()
+            /** @var ActiveQuery $query */
+            $query = $activeRecord::find()
                 ->select([$this->idAttribute, $textAttribute . ' AS text'])
                 ->where(['like', $textAttribute, $q])
                 ->asArray()
-                ->limit($this->limit)
-                ->all();
+                ->limit($this->limit);
 
-            $out['results'] = $model;
+            if ($this->condition) {
+                $query->andWhere($this->condition);
+            }
 
-        } elseif ($id > 0) {
-            $out['results'] = ['id' => $id, 'text' => $activeRecord::findOne($id)->$textAttribute];
+            $out['results'] = $query->all();
         }
 
         return $out;
