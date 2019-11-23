@@ -13,7 +13,7 @@ class AssetBundle extends \yii\web\AssetBundle
 {
     public $sourcePath = "@nadzif/base/assets/files";
     public $css        = [
-        'cs/float-alert.css',
+        'css/float-alert.css',
     ];
     public $js         = [
         'js/float-alert.js',
