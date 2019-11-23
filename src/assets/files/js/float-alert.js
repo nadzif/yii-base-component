@@ -71,12 +71,19 @@ $(function() {
         },
 
         alert: function(tittle = '', message = '', type = 'success', icon) {
-            if (!(/<[a-z][\s\S]*>/i.test(icon))) {
+            if (typeof icon !== 'undefined' && !(/<[a-z][\s\S]*>/i.test(icon))) {
                 icon = '<i class="'+ icon +'"></i>';
             }
 
             var template = this.getTemplate(type);
-            var content = template.replace('_TITLE_', tittle).replace('_MESSAGE_', message).replace('_ICON_', icon);
+            var content = template.replace('_TITLE_', tittle).replace('_MESSAGE_', message);
+
+
+            if (icon) {
+                content = content.replace('_ICON_', icon);
+            } else {
+                content = content.replace('alert-icon', 'd-none');
+            }
 
             $(this.wrapper).append(content);
         },
