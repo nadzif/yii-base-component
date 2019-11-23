@@ -21,11 +21,11 @@ use yii\helpers\Html;
 $gridView   = new GridView($gridViewConfig);
 $gridViewId = $gridView->getId();
 
-echo Html::beginTag('div', ['class' => 'grid-container']);
+echo Html::beginTag('div', ['class' => 'grid-container dataTables_wrapper pos-relative pd-t-45']);
+echo Html::beginTag('div', ['class' => 'datatables-tools clearfix mb-2']);
 
-echo Html::beginTag('div', ['class' => 'datatables-tools']);
-echo Html::beginTag('div', ['id' => $gridViewId . '-filters', 'class' => 'select2-wrap']);
-
+echo Html::beginTag('div',
+    ['id' => $gridViewId . '-filters', 'class' => 'select2-wrap dataTables_length mg-b-10 mg-sm-b-0']);
 echo Select2::widget([
     'model'        => $gridModel,
     'attribute'    => 'pageSize',
@@ -38,13 +38,18 @@ echo Select2::widget([
     ]
 ]);
 
-echo Html::endTag('div');
+echo Html::endTag('div'); //dataTables_length
 
-
+echo Html::beginTag('div', ['class' => 'dataTables_filter d-flex justify-content-end']);
 if ($createConfig) {
 
     $_createConfig = [
-        'modalConfig'      => [],
+        'modalConfig'      => [
+            'toggleButton' => [
+                'label' => '<i class="ion-plus"></i>',
+                'class' => 'btn btn-sm btn-success ml-1'
+            ]
+        ],
         'activeFormConfig' => [],
         'gridViewId'       => $gridViewId,
     ];
@@ -62,20 +67,21 @@ $reloadPjaxJS = <<<JS
 JS;
 
 echo Html::button(Ion::icon(Ion::_ANDROID_OPTIONS), [
-    'class'   => 'btn btn-info',
+    'class'   => 'btn btn-sm btn-info ml-1',
     'onclick' => $filterToggleButton
 ]);
 
 echo Html::button(Ion::icon(Ion::_ANDROID_SYNC), [
-    'class'   => 'btn btn-info',
+    'class'   => 'btn btn-sm btn-info ml-1',
     'onclick' => $reloadPjaxJS
 ]);
+echo Html::endTag('div'); //dataTables_filter
 
-echo Html::endTag('div');
+echo Html::endTag('div'); //datatables-tools
 
 $gridView->run();
 
-echo Html::endTag('div');
+echo Html::endTag('div'); //dataTables_wrapper
 
 if ($gridModel->actionColumn && $gridModel->actionColumnClass == ActionColumn::className()) {
     echo Html::tag('div', false, ['id' => 'grid-update-section', 'style' => 'width:0; height:0; overflow: hidden;']);
