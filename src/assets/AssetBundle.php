@@ -12,9 +12,11 @@ namespace nadzif\base\assets;
 class AssetBundle extends \yii\web\AssetBundle
 {
     public $sourcePath = "@nadzif/base/assets/files";
-    public $css        = [];
+    public $css        = [
+        'cs/float-alert.css',
+    ];
     public $js         = [
-        'js/float-alert.js'
+        'js/float-alert.js',
     ];
     public $depends    = [
         'rmrevin\yii\fontawesome\AssetBundle',
