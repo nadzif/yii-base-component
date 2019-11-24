@@ -38,7 +38,7 @@ class GridView extends \kartik\grid\GridView
         'icon'             => 'fa fa-download'
     ];
 
-    public $layout            = "<div class='grid-view-toolbar pos-absolute t-0 r-0'>{toolbar}</div>{items}{pager}{summary}";
+    public $layout            = "<div class='grid-view-toolbar'>{toolbar}</div>{items}{pager}{summary}";
     public $toggleDataOptions = [
         'all'  => ['class' => 'btn btn-custom-toolbar'],
         'page' => ['class' => 'btn btn-custom-toolbar'],
