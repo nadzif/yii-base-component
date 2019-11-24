@@ -18,14 +18,40 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /** @var GridView $gridView */
-$gridView   = new GridView($gridViewConfig);
-$gridViewId = $gridView->getId();
+$gridView     = new GridView($gridViewConfig);
+$gridViewId   = $gridView->getId();
 
-echo Html::beginTag('div', ['class' => 'grid-container dataTables_wrapper pos-relative pd-t-45']);
+$createConfigDef = [
+    'modalConfig'      => [
+        'toggleButton' => [
+            'label' => Ion::icon(Ion::_PLUS),
+            'class' => 'btn btn-sm btn-success ml-1'
+        ]
+    ],
+    'activeFormConfig' => [],
+    'gridViewId'       => $gridViewId,
+];
+$formLayout   = '@nadzif/base/layouts/ajax/_form';
+
+
+echo Html::beginTag('div', ['class' => 'grid-container dataTables_wrapper']);
 echo Html::beginTag('div', ['class' => 'datatables-tools clearfix mb-2']);
 
-echo Html::beginTag('div',
-    ['id' => $gridViewId . '-filters', 'class' => 'select2-wrap dataTables_length mg-b-10 mg-sm-b-0']);
+echo Html::beginTag('div', ['class' => 'd-flex justify-content-end float-right mb-2 mb-sm-0']);
+if ($createConfig) echo $this->render($formLayout, ArrayHelper::merge($createConfigDef, $createConfig));
+
+echo Html::button(Ion::icon(Ion::_ANDROID_OPTIONS), [
+    'class'   => 'btn btn-sm btn-info ml-1',
+    'onclick' => "(function () { $('tr#{$gridViewId}-filters').toggleClass('d-none'); })()",
+]);
+
+echo Html::button(Ion::icon(Ion::_ANDROID_SYNC), [
+    'class'   => 'btn btn-sm btn-info ml-1',
+    'onclick' => "(function (e) { $.pjax.reload({container:'#{$gridViewId}-pjax'}); })()",
+]);
+echo Html::endTag('div');
+
+echo Html::beginTag('div', ['id' => "{$gridViewId}-filters", 'class' => 'select2-wrap dataTables_length']);
 echo Select2::widget([
     'model'        => $gridModel,
     'attribute'    => 'pageSize',
@@ -34,48 +60,10 @@ echo Select2::widget([
     'data'         => $pageSizeData,
     'options'      => ['class' => 'grid-size-filter'],
     'pluginEvents' => [
-        'change' => 'function(e){$.pjax({container: \'#' . $gridViewId . '-pjax\'})}'
+        'change' => "function(e){ $.pjax({container: '#{$gridViewId}-pjax'}) }"
     ]
 ]);
-
 echo Html::endTag('div'); //dataTables_length
-
-echo Html::beginTag('div', ['class' => 'dataTables_filter d-flex justify-content-end']);
-if ($createConfig) {
-
-    $_createConfig = [
-        'modalConfig'      => [
-            'toggleButton' => [
-                'label' => '<i class="ion-plus"></i>',
-                'class' => 'btn btn-sm btn-success ml-1'
-            ]
-        ],
-        'activeFormConfig' => [],
-        'gridViewId'       => $gridViewId,
-    ];
-
-    echo $this->render('@nadzif/base/layouts/ajax/_form', ArrayHelper::merge($_createConfig, $createConfig));
-}
-
-
-$filterToggleButton = <<<JS
-    (function () { $( "body" ).toggleClass("datatable-filters"); })();
-JS;
-
-$reloadPjaxJS = <<<JS
-   (function () { $.pjax.reload({container:"#$gridViewId-pjax"}); })();
-JS;
-
-echo Html::button(Ion::icon(Ion::_ANDROID_OPTIONS), [
-    'class'   => 'btn btn-sm btn-info ml-1',
-    'onclick' => $filterToggleButton
-]);
-
-echo Html::button(Ion::icon(Ion::_ANDROID_SYNC), [
-    'class'   => 'btn btn-sm btn-info ml-1',
-    'onclick' => $reloadPjaxJS
-]);
-echo Html::endTag('div'); //dataTables_filter
 
 echo Html::endTag('div'); //datatables-tools
 
