@@ -20,7 +20,7 @@ use yii\helpers\Json;
 
 class FormAction extends Action
 {
-    public $formModel;
+
     public $scenario = FormModel::SCENARIO_DEFAULT;
 
     public $query;
@@ -37,14 +37,23 @@ class FormAction extends Action
     public $condition = true;
 
     public $refreshGrid = true;
-    public $gridViewId;
+    public $gridViewId  = 'w0';
+
+    public $formClass;
+    public $modelClass;
+
+    /** @var FormModel */
+    private $_formModel;
 
     public function run()
     {
 
-        /** @var FormModel $formModel */
-        $formModel           = $this->formModel;
-        $formModel->scenario = $this->scenario;
+        $this->_formModel           = new $this->formClass;
+        $this->_formModel->scenario = $this->scenario;
+
+        if ($this->modelClass) {
+            $this->_formModel->model = new $this->modelClass;
+        }
 
         $isUpdate = $this->scenario == FormModel::SCENARIO_UPDATE;
 
@@ -61,16 +70,17 @@ class FormAction extends Action
                 'continuous' => \Yii::t('app', 'creating'),
             ];
         }
+
         $requestParam = \Yii::$app->request->get($this->key);
 
         if ($isUpdate) {
 
             /** @var ActiveQuery $query */
-            $query            = $this->query;
-            $formModel->model = $query->andWhere([$this->key => $requestParam])->one();
+            $query                   = $this->query;
+            $this->_formModel->model = $query->andWhere([$this->key => $requestParam])->one();
 
-            if ($formModel->model) {
-                $formModel->loadAttributes();
+            if ($this->_formModel->model) {
+                $this->_formModel->loadAttributes();
             } else {
                 return Json::encode([
                     'data' => [
@@ -89,9 +99,9 @@ class FormAction extends Action
 
         if (\Yii::$app->request->isAjax) {
             $alertData = [];
-            if ($formModel->load(\Yii::$app->request->post())) {
-                $modelAttributes = $formModel->attributes;
-                if ($this->condition && $formModel->save()) {
+            if ($this->_formModel->load(\Yii::$app->request->post())) {
+                $modelAttributes = $this->_formModel->attributes;
+                if ($this->condition && $this->_formModel->save()) {
                     $title   = StringHelper::replace(
                         $this->successTitle,
                         ucwords(\Yii::t('app', '{present} Success', $action)),
@@ -105,10 +115,10 @@ class FormAction extends Action
 
                     $alertData[] = ['type' => FloatAlert::TYPE_SUCCESS, 'title' => $title, 'message' => $message];
                 } else {
-                    if ($formModel->hasErrors()) {
+                    if ($this->_formModel->hasErrors()) {
                         $formErrors = '';
-                        foreach ($formModel->getErrors() as $attribute => $error) {
-                            $formErrors .= $formModel->getAttributeLabel($attribute) . '<br>';
+                        foreach ($this->_formModel->getErrors() as $attribute => $error) {
+                            $formErrors .= $this->_formModel->getAttributeLabel($attribute) . '<br>';
                             $formErrors .= Html::ul($error);
                             $formErrors .= '<br>';
                         }
@@ -144,7 +154,7 @@ class FormAction extends Action
         }
 
         $_viewParams = [
-            'formModel'        => $formModel,
+            'formModel'        => $this->_formModel,
             'activeFormConfig' => [],
             'actionUrl'        => [$this->controller->getRoute(), $this->key => $requestParam],
         ];
@@ -154,6 +164,5 @@ class FormAction extends Action
         }
 
         return $this->controller->renderAjax($this->view, ArrayHelper::merge($_viewParams, $this->viewParams));
-
     }
 }

@@ -11,27 +11,21 @@ namespace nadzif\base\actions;
 
 use nadzif\base\models\GridModel;
 use yii\base\Action;
-use yii\base\InvalidConfigException;
 use yii\helpers\ArrayHelper;
 
 class ListAction extends Action
 {
-    /**
-     * @var GridModel
-     */
-    public $gridModel;
+    public $gridClass;
     public $gridViewConfig = [];
-
-    public $query = false;
+    public $query          = false;
     public $columns;
-
     public $title;
     public $description;
-    public $breadcrumbs = [];
-
+    public $breadcrumbs    = [];
     public $showToggleData = false;
     public $view           = '@nadzif/base/layouts/_list';
 
+    ////////////
     public $pageSizeData = [
         1   => 1,
         10  => 10,
@@ -39,23 +33,12 @@ class ListAction extends Action
         50  => 50,
         100 => 100,
     ];
-
     public $createConfig = [];
 
-    public function init()
-    {
-//        if (!isset($this->createConfig['model']) && !isset($this->createConfig['button'])) {
-//            throw new InvalidConfigException(\Yii::t('app', 'Set model'));
-//
-//            if (!isset($this->createConfig['button']) && !isset($this->createConfig['actionUrl'])) {
-//                throw new InvalidConfigException(\Yii::t('app', 'Set url action for create'));
-//            }
-//        }
-
-        if ($this->gridModel === null) {
-            throw new InvalidConfigException(get_class($this) . '::$gridModel must be set.');
-        }
-    }
+    /**
+     * @var GridModel
+     */
+    private $_gridModel;
 
     public function run()
     {
@@ -70,21 +53,24 @@ class ListAction extends Action
             $this->controller->getView()->params['description'] = $this->description;
         }
 
-        $dataProvider = $this->gridModel->getDataProvider($this->query);
-        $columns      = $this->columns ?: $this->gridModel->getColumns();
+        $this->_gridModel = new $this->gridClass;
+
+        $dataProvider = $this->_gridModel->getDataProvider($this->query);
+        $columns      = $this->columns ?: $this->_gridModel->getColumns();
 
         $_gridViewConfig = [
             'dataProvider' => $dataProvider,
-            'filterModel'  => $this->gridModel,
+            'filterModel'  => $this->_gridModel,
             'columns'      => $columns,
             'toggleData'   => $this->showToggleData,
         ];
 
+        $this->createConfig['formModel'] = new $this->createConfig['formClass'];
         return $this->controller->render($this->view, [
-            'gridModel'        => $this->gridModel,
-            'gridViewConfig'   => ArrayHelper::merge($_gridViewConfig, $this->gridViewConfig),
-            'pageSizeData'     => $this->pageSizeData,
-            'createConfig'     => $this->createConfig,
+            'gridModel'      => $this->_gridModel,
+            'gridViewConfig' => ArrayHelper::merge($_gridViewConfig, $this->gridViewConfig),
+            'pageSizeData'   => $this->pageSizeData,
+            'createConfig'   => $this->createConfig,
         ]);
     }
 }
