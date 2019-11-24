@@ -6,8 +6,9 @@
  * and open the template in the editor.
  */
 
-namespace backend\widgets;
+namespace nadzif\base\widgets;
 
+use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /**
@@ -17,19 +18,22 @@ use yii\helpers\Html;
  */
 class Table extends \yii\base\Widget
 {
-    public  $reverseBody      = false;
-    public  $containerOptions = [];
-    public  $options          = ['class' => 'table table-bordered table-hover'];
-    public  $headerOptions    = [];
-    public  $headers          = [];
-    public  $rows             = [];
-    public  $fieldConfig      = [];
-    public  $rowOptions       = [];
-    public  $summaryFormat    = 'decimal';
-    public  $responsive       = true;
-    public  $matrix           = [];
-    public  $headersLabel     = [];
-    private $summaryResult    = [];
+    public $wrapper;
+    public $reverseBody      = false;
+    public $containerOptions = [];
+    public $options          = ['class' => 'table table-bordered table-hover'];
+    public $headerOptions    = [];
+    public $headers          = [];
+    public $rows             = [];
+    public $fieldConfig      = [];
+    public $rowOptions       = [];
+    public $summaryFormat    = 'decimal';
+    public $responsive       = true;
+    public $matrix           = [];
+    public $headersLabel     = [];
+    public $identifyEmpty    = true;
+
+    private $summaryResult = [];
 
     public function __construct($config = array())
     {
@@ -58,78 +62,83 @@ class Table extends \yii\base\Widget
     public function run()
     {
 
-        echo Html::beginTag('div', ['class' => 'row']);
-        echo Html::beginTag('div', $this->containerOptions);
+        echo $this->wrapper ? Html::beginTag('div', ['class' => 'row']) : "";
+
+        echo Html::beginTag('div', $this->containerOptions); // container
         echo Html::beginTag('table', $this->options);
         echo Html::beginTag('thead');
         $this->generateHeader();
-        $this->headersLabel = \yii\helpers\ArrayHelper::getColumn($this->headers,
-            'label');
+        $this->headersLabel = ArrayHelper::getColumn($this->headers, 'label');
         echo Html::endTag('thead');
 
-        if ($this->reverseBody) {
-            $this->rows       = array_reverse($this->rows);
-            $this->rowOptions = array_reverse($this->rowOptions);
+        if (!$this->rows) {
+            $countColumn = count($this->headers);
+            echo Html::tag('td', \Yii::t('app', 'No Data Available'), ['colspan' => $countColumn, 'class'=> 'not-set text-center']);
+        } else {
+            if ($this->reverseBody) {
+                $this->rows       = array_reverse($this->rows);
+                $this->rowOptions = array_reverse($this->rowOptions);
+            }
         }
 
+        // <TABLE BODY>
         echo Html::beginTag('tbody');
         $this->generateRow();
         echo Html::endTag('tbody');
+
         if (count($this->summaryResult)) {
             echo Html::beginTag('tfoot');
             $this->generateFooter();
             echo Html::endTag('tfoot');
         }
+        // </TABLE BODY>
 
         echo Html::endTag('table');
-        echo Html::endTag('div');
-        echo Html::endTag('div');
+        echo Html::endTag('div'); // end container
+
+        echo $this->wrapper ? Html::endTag('div') : "";
     }
 
     public function generateHeader()
     {
         echo Html::beginTag('tr', $this->headerOptions);
         foreach ($this->headers as $header) {
-            echo Html::tag('th', $header['label'],
-                isset($header['options']) ? $header['options'] : []);
+            echo Html::tag('th',
+                ArrayHelper::getValue($header, 'label', $header),
+                ArrayHelper::getValue($header, 'options', [])
+            );
         }
         echo Html::endTag('tr');
     }
 
     public function generateRow()
     {
-
         foreach ($this->rows as $index => $row) {
             echo Html::beginTag('tr', $this->rowOptions[$index]);
             foreach ($row as $columnIndex => $data) {
-                echo Html::beginTag('td',
-                    isset($data['options']) ? $data['options'] : []);
 
-                $this->matrix[$index][$columnIndex] = $data['label'];
+                $label                              =
+                    is_array($data) ? ArrayHelper::getValue($data, 'label', null) : $data;
+                $this->matrix[$index][$columnIndex] = $label;
 
-                if (is_array($data) && isset($data['label'])) {
-                    $labelData = $data['label'];
+                if (is_array($data)) {
+                    $columnSummary = ArrayHelper::getValue($data, 'columnSummary', false);
 
-                    if (isset($data['columnSummary']) && $data['columnSummary'] === true) {
+                    if ($columnSummary) {
                         if (isset($this->summaryResult[$columnIndex])) {
                             $this->summaryResult[$columnIndex] += $data['label'];
                         } else {
                             $this->summaryResult[$columnIndex] = $data['label'];
                         }
                     }
-
-                    if (isset($data['format'])) {
-                        $labelData = \Yii::$app->formatter->format($labelData,
-                            $data['format']);
-                    }
-                } else {
-                    $labelData = $data['label'];
+                    $label = \Yii::$app->formatter->format($label, ArrayHelper::getValue($data, 'format', 'text'));
                 }
 
+                echo Html::beginTag('td', ArrayHelper::getValue($data, 'options', []));
                 if (isset($data['labelTag'])) {
-                    echo Html::tag($data['labelTag'], $labelData);
+                    echo Html::tag($data['labelTag'], $label);
                 } else {
-                    echo $labelData;
+                    echo $label;
                 }
                 echo Html::endTag('td');
             }
@@ -141,9 +150,11 @@ class Table extends \yii\base\Widget
     {
         echo Html::beginTag('tr');
         foreach ($this->headers as $index => $header) {
-            echo Html::tag('td',
-                isset($this->summaryResult[$index]) ? \Yii::$app->formatter->format($this->summaryResult[$index],
-                    $this->summaryFormat) : null, ['align' => 'right']);
+            echo Html::tag('td', isset($this->summaryResult[$index])
+                ?
+                \Yii::$app->formatter->format($this->summaryResult[$index], $this->summaryFormat)
+                :
+                null, ['align' => 'right']);
         }
         echo Html::endTag('tr');
     }
