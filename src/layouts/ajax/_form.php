@@ -95,12 +95,12 @@ $iconSuccess = Ion::icon(Ion::_IOS_CHECKMARK_OUTLINE);
 $iconWarning = Ion::icon(Ion::_ANDROID_WARNING);
 $iconDanger  = Ion::icon(Ion::_IOS_FLAME);
 $iconInfo    = Ion::icon(Ion::_INFORMATION);
+$buttonId = $modelName . $scenario . '-submit-' . time();
+$buttonLoadingText = Html::tag('span', null, ['class' => 'spinner-border spinner-border-sm']) . ' Loading...';
 
 $submitSuccess = <<<JS
     (function(html) {
         html = JSON.parse(html);
-        console.log(html);
-        console.log(typeof html);
         $('#output').html(html);
         
         if($("#$gridViewId-pjax").length){
@@ -134,25 +134,46 @@ $submitSuccess = <<<JS
                 window.FloatAlert.alert(alertObject.title, alertObject.message, alertObject.type, '$iconSuccess');
             }
         }
+
+        try {
+            $('#{$buttonId}').button('reset');
+        } catch (error) {}
         
         $("#$formId")[0].reset();
-            $("#$modalId").modal('hide');
+        $("#$modalId").modal('hide');
     })
 JS;
 
+$buttonLoading = <<<JS
+    function (xhr) {
+        try {
+            $('#{$buttonId}').button('loading');
+        } catch (error) {}
+    }
+JS;
+
+echo Html::beginTag('div');
 echo AjaxSubmitButton::widget([
     'label'             => $submitLabel,
     'useWithActiveForm' => $formId,
     'ajaxOptions'       => [
         'type'    => 'POST',
         'url'     => Url::to($actionUrl),
+        'beforeSend' => new JsExpression($buttonLoading),
         'success' => new JsExpression($submitSuccess),
     ],
-    'options'           => ['class' => 'btn btn-info', 'type' => 'submit'],
+    'options'           => [
+        'class' => 'btn btn-info',
+        'id' => $buttonId,
+        'type' => 'submit',
+        'data' => [
+            'loading-text' => $buttonLoadingText
+        ]
+    ],
 ]);
 
-echo Html::resetButton(Yii::t('app', 'Reset'), ['class' => 'btn btn-secondary pull-right']);
+echo Html::resetButton(Yii::t('app', 'Reset'), ['class' => 'btn btn-secondary float-right']);
+echo Html::endTag('div');
 
 ActiveForm::end();
 Modal::end();
-
