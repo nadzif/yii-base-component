@@ -73,7 +73,8 @@ class Table extends \yii\base\Widget
 
         if (!$this->rows) {
             $countColumn = count($this->headers);
-            echo Html::tag('td', \Yii::t('app', 'No Data Available'), ['colspan' => $countColumn, 'class'=> 'not-set text-center']);
+            echo Html::tag('td', \Yii::t('app', 'No Data Available'),
+                ['colspan' => $countColumn, 'class' => 'not-set text-center']);
         } else {
             if ($this->reverseBody) {
                 $this->rows       = array_reverse($this->rows);
@@ -131,7 +132,11 @@ class Table extends \yii\base\Widget
                             $this->summaryResult[$columnIndex] = $data['label'];
                         }
                     }
-                    $label = \Yii::$app->formatter->format($label, ArrayHelper::getValue($data, 'format', 'text'));
+                    $format = ArrayHelper::getValue($data, 'format', 'text');
+
+                    if ($format != 'html') {
+                        $label = \Yii::$app->formatter->format($label, $format);
+                    }
                 }
 
                 echo Html::beginTag('td', ArrayHelper::getValue($data, 'options', []));
