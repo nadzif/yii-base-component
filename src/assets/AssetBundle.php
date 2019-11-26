@@ -17,9 +17,11 @@ class AssetBundle extends \yii\web\AssetBundle
     ];
     public $js         = [
         'js/float-alert.js',
+        'js/ajax-form.js',
     ];
     public $depends    = [
         'rmrevin\yii\fontawesome\AssetBundle',
-        'rmrevin\yii\ionicon\AssetBundle'
+        'rmrevin\yii\ionicon\AssetBundle',
+        'yii\web\YiiAsset',
     ];
 }
