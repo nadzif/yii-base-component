@@ -7,12 +7,19 @@
       "name": "Nadzif",
       "email": "nadzif.lambda@gmail.com",
       "role": "Core Developer"
+    },
+	{
+      "name": "Harto Tri Mulyo",
+      "email": "harto.trimulyo@gmail.com",
+      "role": "Core Developer"
     }
   ],
   "keywords": [
     "yii2",
     "base",
-    "component"
+    "component",
+	"action",
+	"widget"
   ],
   "type": "yii2-extension",
   "minimum-stability": "dev",
