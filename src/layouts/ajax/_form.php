@@ -157,6 +157,14 @@ $buttonLoading = <<<JS
     }
 JS;
 
+$submitError = <<<JS
+    function (xhr) {
+        try {
+            $('#{$buttonId}').button('reset');
+        } catch (error) {}
+    }
+JS;
+
 echo Html::beginTag('div');
 echo AjaxSubmitButton::widget([
     'label'             => $submitLabel,
@@ -166,6 +174,7 @@ echo AjaxSubmitButton::widget([
         'url'        => Url::to($actionUrl),
         'beforeSend' => new JsExpression($buttonLoading),
         'success'    => new JsExpression($submitSuccess),
+        'error'      => new JsExpression($submitError),
     ],
     'options'           => [
         'class' => 'btn btn-info',
