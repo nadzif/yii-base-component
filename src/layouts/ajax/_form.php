@@ -94,68 +94,102 @@ switch ($formModel->scenario) {
         break;
 }
 
+$time              = time();
 $formId            = $form->getId();
 $modalId           = $modal->getId();
 $iconSuccess       = Ion::icon(Ion::_IOS_CHECKMARK_OUTLINE);
 $iconWarning       = Ion::icon(Ion::_ANDROID_WARNING);
 $iconDanger        = Ion::icon(Ion::_IOS_FLAME);
 $iconInfo          = Ion::icon(Ion::_INFORMATION);
-$buttonId          = $modelName . $scenario . '-submit-' . time();
+$buttonId          = $modelName . $scenario . '-submit-' . $time;
+$buttonState       = $modelName . $scenario . '_state_' . $time;
 $buttonLoadingText = Html::tag('span', null, ['class' => 'spinner-border spinner-border-sm']) . ' Loading...';
 
 $submitSuccess = <<<JS
-    (function(html) {
-        html = JSON.parse(html);
-        $('#output').html(html);
-        
-        if($("#$gridViewId-pjax").length){
-            $.pjax.reload({container:"#$gridViewId-pjax"});
-        }
-        
-        if(html.data !== undefined && html.data.alert != undefined){
-            var alertObject = html.data.alert;
-            if(Array.isArray(alertObject)){
-    
-                for (var i in alertObject){
-                var alertData = alertObject[i];
-
-                    switch (alertData.type){
-                        case 'warning':
-                            var alertIcon = '$iconWarning';
-                            break;
-                        case 'danger':
-                            var alertIcon = '$iconDanger';
-                            break;
-                        case 'info':
-                            var alertIcon = '$iconInfo';
-                            break;
-                        default:
-                            var alertIcon = '$iconSuccess';
-                    }
-                    
-                    window.FloatAlert.alert(alertData.title, alertData.message, alertData.type, alertIcon);
-                } 
-            }else{
-                window.FloatAlert.alert(alertObject.title, alertObject.message, alertObject.type, '$iconSuccess');
-            }
-        }
-
+    function(html) {
         try {
-            $('#{$buttonId}').button('reset');
-        } catch (error) {}
+            html = JSON.parse(html);
+            $('#output').html(html);
+            
+            if($("#$gridViewId-pjax").length){
+                $.pjax.reload({container:"#$gridViewId-pjax"});
+            }
+            
+            if(html.data !== undefined && html.data.alert != undefined){
+                var alertObject = html.data.alert;
+                if(Array.isArray(alertObject)){
         
-        $("#$formId")[0].reset();
-        $("#$modalId").modal('hide');
-    })
+                    for (var i in alertObject){
+                    var alertData = alertObject[i];
+
+                        switch (alertData.type){
+                            case 'warning':
+                                var alertIcon = '$iconWarning';
+                                break;
+                            case 'danger':
+                                var alertIcon = '$iconDanger';
+                                break;
+                            case 'info':
+                                var alertIcon = '$iconInfo';
+                                break;
+                            default:
+                                var alertIcon = '$iconSuccess';
+                        }
+                        
+                        window.FloatAlert.alert(alertData.title, alertData.message, alertData.type, alertIcon);
+                    } 
+                }else{
+                    window.FloatAlert.alert(alertObject.title, alertObject.message, alertObject.type, '$iconSuccess');
+                }
+            }
+
+        
+            $('#{$buttonId}').button('reset');
+
+            $("#$formId")[0].reset();
+            $("#$modalId").modal('hide');
+        } catch (error) {}
+    }
 JS;
 
 $buttonLoading = <<<JS
     function (xhr) {
         try {
-            $('#{$buttonId}').button('loading');
-        } catch (error) {}
+            if ({$buttonState} == false) {
+                {$buttonState} = true;
+                $('#{$buttonId}').button('loading');
+            } else {
+                {$buttonState} = false;
+                xhr.abort();
+            }
+
+        } catch (error) {
+            $('#{$buttonId}').button('reset');
+            {$buttonState} = false;
+        }
     }
 JS;
+
+$submitError = <<<JS
+    function (xhr) {
+        try {
+            $('#{$buttonId}').button('reset');
+        } catch (error) {}
+
+        {$buttonState} = false;
+    }
+JS;
+
+$formState = <<<JS
+    var {$buttonState} = false;
+    $("#$modalId").on('hidden.bs.modal', function (e) {
+        {$buttonState} = false;
+        $('#{$buttonId}').button('reset');
+        $("#$formId")[0].reset();
+    });
+JS;
+
+$this->registerJs($formState);
 
 echo Html::beginTag('div');
 echo AjaxSubmitButton::widget([
@@ -166,6 +200,7 @@ echo AjaxSubmitButton::widget([
         'url'        => Url::to($actionUrl),
         'beforeSend' => new JsExpression($buttonLoading),
         'success'    => new JsExpression($submitSuccess),
+        'error'      => new JsExpression($submitError),
     ],
     'options'           => [
         'class' => 'btn btn-info',
