@@ -101,7 +101,7 @@ class FormAction extends Action
             $alertData = [];
             if ($this->_formModel->load(\Yii::$app->request->post())) {
                 $modelAttributes = $this->_formModel->attributes;
-                if ($this->condition && $this->_formModel->save()) {
+                if ($this->condition && $this->_formModel->submit()) {
                     $title   = StringHelper::replace(
                         $this->successTitle,
                         ucwords(\Yii::t('app', '{present} Success', $action)),

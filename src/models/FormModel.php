@@ -10,12 +10,16 @@ namespace nadzif\base\models;
 
 
 use yii\base\Model;
+use yii\base\ModelEvent;
 
 class FormModel extends Model
 {
 
     const SCENARIO_CREATE = 'create';
     const SCENARIO_UPDATE = 'update';
+
+    const EVENT_BEFORE_SUBMIT = 'beforeSubmit';
+    const EVENT_AFTER_SUBMIT  = 'afterSubmit';
 
     /** @var \yii\db\ActiveRecord */
     public $model;
@@ -75,11 +79,21 @@ class FormModel extends Model
         return $this->model;
     }
 
-    public function save($runValidation = true)
+    public function submit($runValidation = true)
     {
+        $this->beforeSubmit();
+
         $this->setModelAttributes();
         $validated = $runValidation ? ($this->validateForm ? $this->validate() : true) : true;
-        return $validated && $this->getModel()->save();
+
+        $success = $validated && $this->getModel()->save();
+        $this->afterSubmit();
+        return $success;
+    }
+
+    public function beforeSubmit()
+    {
+        $this->trigger(self::EVENT_BEFORE_SUBMIT);
     }
 
     public function setModelAttributes()
@@ -92,6 +106,11 @@ class FormModel extends Model
                 continue;
             }
         }
+    }
+
+    public function afterSubmit()
+    {
+        $this->trigger(self::EVENT_AFTER_SUBMIT);
     }
 
     protected function getAttributesKey()
