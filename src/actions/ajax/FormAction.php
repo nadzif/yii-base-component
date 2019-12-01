@@ -100,7 +100,7 @@ class FormAction extends Action
         if (\Yii::$app->request->isAjax) {
             $alertData = [];
             if ($this->_formModel->load(\Yii::$app->request->post())) {
-                $modelAttributes = $this->_formModel->attributes;
+                $modelAttributes = \Yii::$app->request->post($this->_formModel->formName());
                 if ($this->condition && $this->_formModel->submit()) {
                     $title   = StringHelper::replace(
                         $this->successTitle,
