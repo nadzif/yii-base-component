@@ -37,27 +37,21 @@ $_activeFormConfig = [
 $modal     = Modal::begin(ArrayHelper::merge($_modalConfig, $modalConfig));
 $form      = ActiveForm::begin(ArrayHelper::merge($_activeFormConfig, $activeFormConfig));
 $formRules = $formModel->formRules();
+$hasUpload = ArrayHelper::getValue($activeFormConfig, 'options.enctype', false) == 'multipart/form-data';
 
-foreach ($formRules as $attributeName => $attributeOptions) {
-    if (!ArrayHelper::isIn($attributeName, $formModel->scenarios()[$scenario])) {
-        continue;
-    }
+foreach ($formModel->scenarios()[$scenario] as $attributeName) {
+    $attributeOptions = ArrayHelper::getValue($formRules, $attributeName, []);
 
-    $inputType    = ArrayHelper::getValue($attributeOptions, 'inputType', false);
+    $inputType    = ArrayHelper::getValue($attributeOptions, 'inputType', 'text');
     $inputOptions = ArrayHelper::getValue($attributeOptions, 'inputOptions', []);
 
     $inputId   = $formModel->scenario . '-' . Html::getInputId($formModel, $attributeName);
     $formField = $form->field($formModel, $attributeName);
 
-    switch ($attributeOptions['inputType']) {
+    switch ($inputType) {
         case 'text':
             $inputOptions['id'] = $inputId;
             $formField->textInput($inputOptions);
-            break;
-        case 'hidden':
-            $inputOptions['id'] = $inputId;
-            $formField->template = '{input}';
-            $formField->hiddenInput($inputOptions);
             break;
         case 'textarea':
             $inputOptions['id'] = $inputId;
@@ -67,12 +61,23 @@ foreach ($formRules as $attributeName => $attributeOptions) {
             $inputOptions['id'] = $inputId;
             $formField->passwordInput($inputOptions);
             break;
+        case 'hidden':
+            $inputOptions['id']  = $inputId;
+            $formField->template = '{input}';
+            $formField->hiddenInput($inputOptions);
+            break;
+        case 'fileInput':
+            $inputOptions['id']  = $inputId;
+            $formField->template = '{input}';
+            $formField->fileInput($inputOptions);
+            break;
         default:
-            if (ArrayHelper::isIn($attributeOptions['inputType'], ['backend\widgets\Select2'])) {
+            if ($inputType instanceof \kartik\select2\Select2) {
                 if ($formModel->$attributeName) {
                     $inputOptions['initValueText'] = $formModel->$attributeName;
                 }
             }
+
             $inputOptions['id']            = $inputId;
             $inputOptions['options']['id'] = $inputId;
             $formField->widget($inputType, $inputOptions);
@@ -192,9 +197,10 @@ JS;
 $this->registerJs($formState);
 
 echo Html::beginTag('div');
-echo AjaxSubmitButton::widget([
+echo \nadzif\base\widgets\AjaxSubmitButton::widget([
     'label'             => $submitLabel,
     'useWithActiveForm' => $formId,
+    'formHasUpload'     => $hasUpload,
     'ajaxOptions'       => [
         'type'       => 'POST',
         'url'        => Url::to($actionUrl),
