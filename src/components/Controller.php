@@ -15,6 +15,7 @@ use yii\filters\VerbFilter;
 class Controller extends \yii\web\Controller
 {
     public $allowedRoles = ['@'];
+    public $language;
 
     public function behaviors()
     {
@@ -45,6 +46,8 @@ class Controller extends \yii\web\Controller
     public function init()
     {
         parent::init();
-        \Yii::$app->language = 'id';
+        if ($this->language) {
+            \Yii::$app->language = $this->language;
+        }
     }
 }
