@@ -8,8 +8,8 @@
  * @var array                         $activeFormConfig
  */
 
+use nadzif\base\widgets\AjaxSubmitButton;
 use nadzif\base\widgets\Modal;
-use demogorgorn\ajax\AjaxSubmitButton;
 use rmrevin\yii\ionicon\Ion;
 use yii\bootstrap4\Html;
 use yii\helpers\ArrayHelper;
@@ -17,6 +17,8 @@ use yii\bootstrap4\ActiveForm;
 use yii\helpers\Url;
 use yii\web\JsExpression;
 use \yii\helpers\StringHelper;
+
+$time = time();
 
 $modalTitle       = ArrayHelper::getValue($modalConfig, 'title', Yii::t('app', 'Form'));
 $modalDescription = ArrayHelper::getValue($modalConfig, 'description', false);
@@ -30,7 +32,7 @@ $_modalConfig = [
 ];
 
 $_activeFormConfig = [
-    'id'     => $modelName . $scenario . '-form-' . time(),
+    'id'     => $modelName . $scenario . '-form-' . $time,
     'action' => $actionUrl
 ];
 
@@ -44,14 +46,19 @@ foreach ($formModel->scenarios()[$scenario] as $attributeName) {
 
     $inputType    = ArrayHelper::getValue($attributeOptions, 'inputType', 'text');
     $inputOptions = ArrayHelper::getValue($attributeOptions, 'inputOptions', []);
+    $fieldOptions = ArrayHelper::getValue($attributeOptions, 'fieldOptions', []);
 
     $inputId   = $formModel->scenario . '-' . Html::getInputId($formModel, $attributeName);
-    $formField = $form->field($formModel, $attributeName);
+    $formField = $form->field($formModel, $attributeName, $fieldOptions);
 
     switch ($inputType) {
         case 'text':
             $inputOptions['id'] = $inputId;
             $formField->textInput($inputOptions);
+            break;
+        case 'checkbox':
+            $inputOptions['id'] = $inputId;
+            $formField->checkbox($inputOptions);
             break;
         case 'textarea':
             $inputOptions['id'] = $inputId;
@@ -99,7 +106,6 @@ switch ($formModel->scenario) {
         break;
 }
 
-$time              = time();
 $formId            = $form->getId();
 $modalId           = $modal->getId();
 $iconSuccess       = Ion::icon(Ion::_IOS_CHECKMARK_OUTLINE);
@@ -197,7 +203,7 @@ JS;
 $this->registerJs($formState);
 
 echo Html::beginTag('div');
-echo \nadzif\base\widgets\AjaxSubmitButton::widget([
+echo AjaxSubmitButton::widget([
     'label'             => $submitLabel,
     'useWithActiveForm' => $formId,
     'formHasUpload'     => $hasUpload,

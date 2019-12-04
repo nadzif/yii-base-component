@@ -9,7 +9,10 @@
 namespace nadzif\base\widgets;
 
 
-class DatePicker
+class DatePicker extends \kartik\date\DatePicker
 {
-
+    public $pluginOptions = [
+        'autoclose' => true,
+        'format'    => 'yyyy-mm-dd'
+    ];
 }

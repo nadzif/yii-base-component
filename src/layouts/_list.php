@@ -8,6 +8,7 @@
  * @var array                         $pageSizeData
  * @var array                         $showCreateButton
  * @var array                         $createConfig
+ * @var array                         $toolbars
  */
 
 use nadzif\base\components\ActionColumn;
@@ -18,27 +19,32 @@ use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
 /** @var GridView $gridView */
-$gridView     = new GridView($gridViewConfig);
-$gridViewId   = $gridView->getId();
-
-$createConfigDef = [
-    'modalConfig'      => [
-        'toggleButton' => [
-            'label' => Ion::icon(Ion::_PLUS),
-            'class' => 'btn btn-sm btn-success ml-1'
-        ]
-    ],
-    'activeFormConfig' => [],
-    'gridViewId'       => $gridViewId,
-];
-$formLayout   = '@nadzif/base/layouts/ajax/_form';
-
+$gridView   = new GridView($gridViewConfig);
+$gridViewId = $gridView->getId();
 
 echo Html::beginTag('div', ['class' => 'grid-container dataTables_wrapper']);
 echo Html::beginTag('div', ['class' => 'datatables-tools clearfix mb-2']);
 
 echo Html::beginTag('div', ['class' => 'd-flex justify-content-end float-right mb-2 mb-sm-0']);
-if ($createConfig) echo $this->render($formLayout, ArrayHelper::merge($createConfigDef, $createConfig));
+if ($createConfig) {
+    $createConfigDef = [
+        'modalConfig'      => [
+            'toggleButton' => [
+                'label' => Ion::icon(Ion::_PLUS),
+                'class' => 'btn btn-sm btn-success ml-1'
+            ]
+        ],
+        'activeFormConfig' => [],
+        'gridViewId'       => $gridViewId,
+    ];
+    $formLayout      = '@nadzif/base/layouts/ajax/_form';
+
+    echo $this->render($formLayout, ArrayHelper::merge($createConfigDef, $createConfig));
+}
+
+foreach ($toolbars as $toolbar) {
+    echo $toolbar;
+}
 
 echo Html::button(Ion::icon(Ion::_ANDROID_OPTIONS), [
     'class'   => 'btn btn-sm btn-info ml-1',

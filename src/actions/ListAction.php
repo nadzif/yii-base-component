@@ -22,19 +22,19 @@ class ListAction extends Action
     public $title;
     public $description;
     public $breadcrumbs    = [];
-    public $showToggleData = false;
-    public $view           = '@nadzif/base/layouts/_list';
+    public $toolbars       = [];
 
     ////////////
-    public $pageSizeData = [
+    public $showToggleData = false;
+    public $view           = '@nadzif/base/layouts/_list';
+    public $pageSizeData   = [
         1   => 1,
         10  => 10,
         25  => 25,
         50  => 50,
         100 => 100,
     ];
-    public $createConfig = [];
-
+    public $createConfig   = [];
     /**
      * @var GridModel
      */
@@ -65,9 +65,13 @@ class ListAction extends Action
             'toggleData'   => $this->showToggleData,
         ];
 
-        $this->createConfig['formModel'] = new $this->createConfig['formClass'];
+        if ($this->createConfig) {
+            $this->createConfig['formModel'] = new $this->createConfig['formClass'];
+        }
+
         return $this->controller->render($this->view, [
             'gridModel'      => $this->_gridModel,
+            'toolbars'       => $this->toolbars,
             'gridViewConfig' => ArrayHelper::merge($_gridViewConfig, $this->gridViewConfig),
             'pageSizeData'   => $this->pageSizeData,
             'createConfig'   => $this->createConfig,
