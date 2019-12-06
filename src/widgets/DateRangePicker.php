@@ -9,7 +9,7 @@
 namespace nadzif\base\widgets;
 
 
-class DateRangePicker
+class DateRangePicker extends \kartik\daterange\DateRangePicker
 {
 
 }
