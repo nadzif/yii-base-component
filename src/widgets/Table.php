@@ -32,6 +32,7 @@ class Table extends \yii\base\Widget
     public $matrix           = [];
     public $headersLabel     = [];
     public $identifyEmpty    = true;
+    public $allowHtml        = false;
 
     private $summaryResult = [];
 
@@ -137,6 +138,10 @@ class Table extends \yii\base\Widget
                     if ($format != 'html') {
                         $label = \Yii::$app->formatter->format($label, $format);
                     }
+                }
+
+                if ($this->allowHtml) {
+                    $label = Html::decode($label);
                 }
 
                 echo Html::beginTag('td', ArrayHelper::getValue($data, 'options', []));
