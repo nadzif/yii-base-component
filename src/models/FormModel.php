@@ -87,16 +87,20 @@ class FormModel extends Model
         $validated = $runValidation ? ($this->validateForm ? $this->validate() : true) : true;
 
         $success = $validated && $this->getModel()->save();
+        $this->model->hasErrors() ? $this->addErrors($this->model->getErrors()) : false;
+
         $this->afterSubmit();
         return $success;
     }
 
-    public function beforeSubmit()
+    public
+    function beforeSubmit()
     {
         $this->trigger(self::EVENT_BEFORE_SUBMIT);
     }
 
-    public function setModelAttributes()
+    public
+    function setModelAttributes()
     {
         $modelAttributes = $this->scenarios()[$this->getScenario()];
         foreach ($modelAttributes as $modelAttribute) {
@@ -108,12 +112,14 @@ class FormModel extends Model
         }
     }
 
-    public function afterSubmit()
+    public
+    function afterSubmit()
     {
         $this->trigger(self::EVENT_AFTER_SUBMIT);
     }
 
-    protected function getAttributesKey()
+    protected
+    function getAttributesKey()
     {
         return array_keys($this->attributes);
     }
