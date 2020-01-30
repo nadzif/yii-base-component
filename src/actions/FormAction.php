@@ -20,7 +20,8 @@ use yii\helpers\Json;
 
 class FormAction extends Action
 {
-    public $scenario = FormModel::SCENARIO_DEFAULT;
+    public $pageOptions = [];
+    public $scenario    = FormModel::SCENARIO_DEFAULT;
 
     public $query;
     public $key = 'id';
@@ -155,6 +156,7 @@ class FormAction extends Action
         }
 
         $_viewParams = [
+            'pageOptions'      => $this->pageOptions,
             'formModel'        => $this->_formModel,
             'activeFormConfig' => [],
             'actionUrl'        => [$this->controller->getRoute(), $this->key => $requestParam],

@@ -1,7 +1,9 @@
 <?php
 
 /**
+ * @var \yii\web\View                 $this
  * @var \nadzif\base\models\FormModel $formModel
+ * @var array                         $pageOptions
  * @var string                        $scenario
  * @var array|string                  $actionUrl
  * @var array                         $modalConfig
@@ -19,10 +21,16 @@ $time = time();
 $scenario  = $formModel->getScenario();
 $modelName = StringHelper::basename(get_class($formModel));
 
+$this->title                 = ArrayHelper::getValue($pageOptions, 'title');
+$this->params['breadcrumbs'] = ArrayHelper::getValue($pageOptions, 'breadcrumbs', []);
+
 $_activeFormConfig = [
     'id'     => $modelName . $scenario . '-form-' . $time,
     'action' => $actionUrl
 ];
+
+echo Html::beginTag('div', ['class' => 'row']);
+echo Html::beginTag('div', ['class' => 'col-md-12']);
 
 $form      = ActiveForm::begin(ArrayHelper::merge($_activeFormConfig, $activeFormConfig));
 $formRules = $formModel->formRules();
@@ -32,9 +40,20 @@ foreach ($formModel->scenarios()[$scenario] as $attributeName) {
 
     $inputType    = ArrayHelper::getValue($attributeOptions, 'inputType', 'text');
     $inputOptions = ArrayHelper::getValue($attributeOptions, 'inputOptions', []);
+    $inputLabel   = ArrayHelper::getValue($attributeOptions, 'inputLabel');
     $fieldOptions = ArrayHelper::getValue($attributeOptions, 'fieldOptions', []);
 
-    $inputId   = $formModel->scenario . '-' . Html::getInputId($formModel, $attributeName);
+    $inputId = $formModel->scenario . '-' . Html::getInputId($formModel, $attributeName);
+
+    if ($inputType == 'content') {
+        $contentOptions = ['id' => $inputId];
+        echo Html::tag(ArrayHelper::getValue($inputOptions, 'tag', 'div'),
+            ArrayHelper::getValue($inputOptions, 'content', false),
+            ArrayHelper::merge(ArrayHelper::getValue($inputOptions, 'options', []), $contentOptions)
+        );
+        continue;
+    }
+
     $formField = $form->field($formModel, $attributeName, $fieldOptions);
 
     switch ($inputType) {
@@ -49,6 +68,10 @@ foreach ($formModel->scenarios()[$scenario] as $attributeName) {
         case 'textarea':
             $inputOptions['id'] = $inputId;
             $formField->textarea($inputOptions);
+            break;
+        case 'radioList':
+            $inputOptions['id'] = $inputId;
+            $formField->radioList($inputOptions);
             break;
         case 'password':
             $inputOptions['id'] = $inputId;
@@ -77,7 +100,7 @@ foreach ($formModel->scenarios()[$scenario] as $attributeName) {
             break;
     }
 
-    echo $formField;
+    echo $inputLabel ? $formField->label($inputLabel) : $formField;
 }
 
 switch ($formModel->scenario) {
@@ -103,3 +126,6 @@ echo Html::resetButton(Yii::t('app', 'Reset'), ['class' => 'btn btn-secondary fl
 echo Html::endTag('div');
 
 ActiveForm::end();
+echo Html::endTag('div');
+echo Html::endTag('div');
+echo Html::endTag('div');
