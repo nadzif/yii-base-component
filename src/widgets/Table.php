@@ -41,7 +41,7 @@ class Table extends \yii\base\Widget
         parent::__construct($config);
         if ($this->responsive) {
             if (isset($this->containerOptions['class'])) {
-                $this->containerOptions['class'] .= ' col-sm-12 table-responsive';
+                $this->containerOptions['class'] .= ' table-responsive';
             } else {
                 $this->containerOptions['class'] = 'col-sm-12 table-responsive';
             }
