@@ -18,12 +18,16 @@ use yii\helpers\Html;
  */
 class Table extends \yii\base\Widget
 {
+    const HEADER_MODE_MULTIPLE = 'headerMultiple';
+    const HEADER_MODE_SINGLE   = 'headerSingle';
+
     public $wrapper;
     public $reverseBody      = false;
     public $containerOptions = [];
     public $options          = ['class' => 'table table-bordered table-hover'];
     public $headerOptions    = [];
     public $headers          = [];
+    public $headerMode       = self::HEADER_MODE_SINGLE;
     public $rows             = [];
     public $fieldConfig      = [];
     public $rowOptions       = [];
@@ -103,14 +107,39 @@ class Table extends \yii\base\Widget
 
     public function generateHeader()
     {
-        echo Html::beginTag('tr', $this->headerOptions);
-        foreach ($this->headers as $header) {
-            echo Html::tag('th',
-                ArrayHelper::getValue($header, 'label', $header),
-                ArrayHelper::getValue($header, 'options', [])
-            );
+        if ($this->headers) {
+            if ($this->headerMode == self::HEADER_MODE_SINGLE) {
+                echo Html::beginTag('tr', $this->headerOptions);
+                foreach ($this->headers as $header) {
+                    $label  = ArrayHelper::getValue($header, 'label', $header);
+                    $format = ArrayHelper::getValue($header, 'format', 'text');
+                    $label  = $format != 'html' ? \Yii::$app->formatter->format($label, $format) : $label;
+
+                    if ($this->allowHtml) {
+                        $label = Html::decode($label);
+                    }
+
+                    echo Html::tag('th', $label, ArrayHelper::getValue($header, 'options', []));
+                }
+                echo Html::endTag('tr');
+            } else {
+                foreach ($this->headers as $index => $headerRow) {
+                    echo Html::beginTag('tr', $this->headerOptions);
+                    foreach ($headerRow as $header) {
+                        $label  = ArrayHelper::getValue($header, 'label', $header);
+                        $format = ArrayHelper::getValue($header, 'format', 'text');
+                        $label  = $format != 'html' ? \Yii::$app->formatter->format($label, $format) : $label;
+                        if ($this->allowHtml) {
+                            $label = Html::decode($label);
+                        }
+
+                        echo Html::tag('th', $label, ArrayHelper::getValue($header, 'options', []));
+                    }
+                    echo Html::endTag('tr');
+                }
+            }
+
         }
-        echo Html::endTag('tr');
     }
 
     public function generateRow()
