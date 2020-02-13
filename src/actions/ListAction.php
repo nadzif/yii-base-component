@@ -12,6 +12,7 @@ namespace nadzif\base\actions;
 use nadzif\base\models\GridModel;
 use yii\base\Action;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Html;
 
 class ListAction extends Action
 {
@@ -23,6 +24,7 @@ class ListAction extends Action
     public $description;
     public $breadcrumbs    = [];
     public $toolbars       = [];
+    public $inlineToolbar  = true;
 
     ////////////
     public $showToggleData = false;
@@ -63,15 +65,23 @@ class ListAction extends Action
             'filterModel'  => $this->_gridModel,
             'columns'      => $columns,
             'toggleData'   => $this->showToggleData,
+            'toolbarContainerOptions' => [
+                'class' => 'grid-view-toolbar text-right mb-2'
+            ]
         ];
 
         if ($this->createConfig) {
             $this->createConfig['formModel'] = new $this->createConfig['formClass'];
         }
 
+        if ($this->inlineToolbar) {
+            Html::addCssClass($_gridViewConfig['toolbarContainerOptions'], 'w-100 d-flex flex-row');
+        }
+
         return $this->controller->render($this->view, [
             'gridModel'      => $this->_gridModel,
             'toolbars'       => $this->toolbars,
+            'inlineToolbar'  => $this->inlineToolbar,
             'gridViewConfig' => ArrayHelper::merge($_gridViewConfig, $this->gridViewConfig),
             'pageSizeData'   => $this->pageSizeData,
             'createConfig'   => $this->createConfig,
