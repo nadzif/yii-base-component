@@ -12,7 +12,8 @@ namespace nadzif\base\widgets;
 class DatePicker extends \kartik\date\DatePicker
 {
     public $pluginOptions = [
-        'autoclose' => true,
-        'format'    => 'yyyy-mm-dd'
+        'autoclose'      => true,
+        'format'         => 'yyyy-mm-dd',
+        'todayHighlight' => true,
     ];
 }
