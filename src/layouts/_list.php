@@ -83,6 +83,7 @@ if ($gridModel->actionColumn && $gridModel->actionColumnClass == ActionColumn::c
     echo Html::tag('div', false, ['id' => 'grid-update-section', 'style' => 'width:0; height:0; overflow: hidden;']);
 }
 
+$inlineToolbar = isset($inlineToolbar) ? $inlineToolbar : true;
 if ($inlineToolbar) {
     $inlineToolbarsJS = <<<JS
     (function() {
