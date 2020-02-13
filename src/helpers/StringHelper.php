@@ -14,7 +14,16 @@ class StringHelper
     public static function replace($string, $default, $array = [])
     {
         if ($string) {
-            return str_replace(['{', '}',], '', strtr($string, $array));
+            $placeholders = [];
+            foreach ((array) $array as $name => $value) {
+                if(is_array($value)){
+                    continue;
+                }
+
+                $placeholders['{' . $name . '}'] = $value;
+            }
+
+            return ($placeholders === []) ? $string : strtr($string, $placeholders);
         } else {
             return $default;
         }
