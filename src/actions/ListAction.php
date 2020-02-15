@@ -67,7 +67,7 @@ class ListAction extends Action
             'columns'      => $columns,
             'toggleData'   => $this->showToggleData,
             'toolbarContainerOptions' => [
-                'class' => 'grid-view-toolbar text-right mb-2'
+                'class' => 'grid-view-toolbar mb-2'
             ]
         ];
 
