@@ -13,6 +13,7 @@ use nadzif\base\helpers\StringHelper;
 use nadzif\base\models\FormModel;
 use nadzif\base\widgets\FloatAlert;
 use yii\base\Action;
+use yii\base\Model;
 use yii\db\ActiveQuery;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -47,8 +48,11 @@ class FormAction extends Action
     public function run()
     {
 
-        $this->_formModel           = new $this->formClass;
-        $this->_formModel->scenario = $this->scenario;
+        /** @var Model $formModel */
+        $formModel = new $this->_formModel;
+        $formModel->setScenario($this->scenario);
+
+        $this->_formModel = $formModel;
 
         if ($this->modelClass) {
             $this->_formModel->model = new $this->modelClass;

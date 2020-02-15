@@ -11,6 +11,7 @@ namespace nadzif\base\actions;
 
 use nadzif\base\models\GridModel;
 use yii\base\Action;
+use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 
@@ -71,7 +72,11 @@ class ListAction extends Action
         ];
 
         if ($this->createConfig) {
-            $this->createConfig['formModel'] = new $this->createConfig['formClass'];
+            /** @var Model $formModel */
+            $formModel = new $this->createConfig['formClass'];
+            $formModel->setScenario(ArrayHelper::getValue($this->createConfig, 'scenario', null));
+
+            $this->createConfig['formModel'] = $formModel;
         }
 
         if ($this->inlineToolbar) {
