@@ -62,10 +62,10 @@ class ListAction extends Action
         $columns      = $this->columns ?: $this->_gridModel->getColumns();
 
         $_gridViewConfig = [
-            'dataProvider' => $dataProvider,
-            'filterModel'  => $this->_gridModel,
-            'columns'      => $columns,
-            'toggleData'   => $this->showToggleData,
+            'dataProvider'            => $dataProvider,
+            'filterModel'             => $this->_gridModel,
+            'columns'                 => $columns,
+            'toggleData'              => $this->showToggleData,
             'toolbarContainerOptions' => [
                 'class' => 'grid-view-toolbar mb-2'
             ]
@@ -74,7 +74,7 @@ class ListAction extends Action
         if ($this->createConfig) {
             /** @var Model $formModel */
             $formModel = new $this->createConfig['formClass'];
-            $formModel->setScenario(ArrayHelper::getValue($this->createConfig, 'scenario', null));
+            $formModel->setScenario(ArrayHelper::getValue($this->createConfig, 'scenario', Model::SCENARIO_DEFAULT));
 
             $this->createConfig['formModel'] = $formModel;
         }
