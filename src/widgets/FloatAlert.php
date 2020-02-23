@@ -29,7 +29,6 @@ use yii\helpers\Html;
  *     ]
  * ]);
  */
-
 class FloatAlert extends Widget
 {
 
@@ -45,8 +44,8 @@ class FloatAlert extends Widget
     const ALERT_WARNING = 'alert-warning';
     const COLOR_SOLID   = 'alert-solid';
 
-    public $time       = 3000;
-    public $messages   = [];
+    public $time             = 3000;
+    public $messages         = [];
     public $containerOptions = [];
 
     public function init()
@@ -73,30 +72,6 @@ class FloatAlert extends Widget
         // echo Html::tag('div', null, ['class' => 'alert-backdrop']);
     }
 
-    public function render_layout($options = [])
-    {
-        $title = ArrayHelper::remove($options, 'title');
-        $message = ArrayHelper::remove($options, 'message');
-        $icon = ArrayHelper::remove($options, 'icon');
-
-        Html::addCssClass($options['options'], 'shadow');
-
-        Alert::begin($options);
-        echo Html::beginTag('div', ['class' => 'd-sm-flex align-items-center justify-content-start alert-content']);
-        if (!is_null($icon)) {
-            echo Html::beginTag('div', ['class' => 'alert-icon']);
-            echo $icon;
-            echo Html::endTag('div');
-        }
-        echo Html::beginTag('div', ['class' => 'mg-sm-l-15 mg-t-15 mg-sm-t-0']);
-        echo Html::tag('h5', $title, ['class' => 'mg-b-2 pd-t-2 text-white']);
-        echo Html::tag('p', $message, ['class' => 'mg-b-0 tx-xs op-8']);
-        echo Html::endTag('div');
-        echo Html::endTag('div');
-        echo Html::tag('div', '', ['class' => 'loading']);
-        Alert::end();
-    }
-
     public function render_template()
     {
         echo Html::beginTag('template', ['class' => 'alert-template']);
@@ -109,5 +84,31 @@ class FloatAlert extends Widget
             'icon'    => '_ICON_'
         ]);
         echo Html::endTag('template');
+    }
+
+    public function render_layout($options = [])
+    {
+        $title   = ArrayHelper::remove($options, 'title');
+        $message = ArrayHelper::remove($options, 'message');
+        $icon    = ArrayHelper::remove($options, 'icon');
+
+        Html::addCssClass($options['options'], 'shadow');
+
+        Alert::begin($options);
+        echo Html::beginTag('div', ['class' => 'd-sm-flex align-items-center justify-content-start alert-content']);
+        if (!is_null($icon)) {
+            echo Html::beginTag('div', ['class' => 'alert-icon']);
+            echo $icon;
+            echo Html::endTag('div');
+        }
+        echo Html::beginTag('div', ['class' => 'mg-sm-l-15 mg-t-15 mg-sm-t-0']);
+        if ($title) {
+            echo Html::tag('h5', $title, ['class' => 'mg-b-2 pd-t-2 text-white']);
+        }
+        echo Html::tag('p', $message, ['class' => 'mg-b-0 tx-xs op-8']);
+        echo Html::endTag('div');
+        echo Html::endTag('div');
+        echo Html::tag('div', '', ['class' => 'loading']);
+        Alert::end();
     }
 }
