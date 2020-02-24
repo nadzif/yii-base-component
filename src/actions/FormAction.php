@@ -48,7 +48,7 @@ class FormAction extends Action
     public function run()
     {
         /** @var Model $formModel */
-        $formModel = new $this->_formModel;
+        $formModel = new $this->formClass;
         $formModel->setScenario($this->scenario);
 
         $this->_formModel = $formModel;
