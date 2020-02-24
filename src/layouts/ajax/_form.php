@@ -173,6 +173,9 @@ $submitSuccess = <<<JS
             $('#{$buttonId}').button('reset');
 
             $("#$formId")[0].reset();
+            $("#$formId").find('select').each(function() {
+                $(this).val(null).trigger('change');
+            });
             $("#$modalId").modal('hide');
         } catch (error) {}
     }
