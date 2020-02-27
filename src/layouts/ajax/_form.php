@@ -13,7 +13,7 @@ use nadzif\base\widgets\Modal;
 use rmrevin\yii\ionicon\Ion;
 use yii\bootstrap4\Html;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap4\ActiveForm;
+use nadzif\base\components\ActiveForm;
 use yii\helpers\Url;
 use yii\web\JsExpression;
 use \yii\helpers\StringHelper;

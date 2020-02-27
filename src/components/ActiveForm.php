@@ -9,7 +9,7 @@
 namespace nadzif\base\components;
 
 
-class ActiveForm extends \yii\bootstrap4\ActiveForm
+class ActiveForm extends \kartik\form\ActiveForm
 {
 
     public $enableClientScript = true;

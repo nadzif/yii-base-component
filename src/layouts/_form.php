@@ -13,8 +13,8 @@
 use rmrevin\yii\ionicon\Ion;
 use yii\bootstrap4\Html;
 use yii\helpers\ArrayHelper;
-use yii\bootstrap4\ActiveForm;
 use \yii\helpers\StringHelper;
+use nadzif\base\components\ActiveForm;
 
 $time = time();
 
