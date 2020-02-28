@@ -14,11 +14,12 @@ use yii\base\Action;
 
 class ListAction extends Action
 {
-    public $limit = 10;
+    public $limit = false;
 
     public $activeRecordClass;
     public $idAttribute;
     public $textAttribute;
+    public $orderBy = [];
 
     public $parentAttribute;
 
@@ -45,11 +46,18 @@ class ListAction extends Action
                 $query    = $activeRecord::find()
                     ->select([$this->idAttribute, $textAttribute . ' AS name'])
                     ->where([$this->parentAttribute => $parentId])
-                    ->asArray()
-                    ->limit($this->limit);
+                    ->asArray();
 
                 if ($this->condition) {
                     $query->andWhere($this->condition);
+                }
+
+                if ($this->orderBy) {
+                    $query->addOrderBy($this->orderBy);
+                }
+
+                if ($this->limit) {
+                    $query->limit($this->limit);
                 }
 
                 return ['output' => $query->all(), 'selected' => $selected];
