@@ -28,7 +28,7 @@ class Action extends \yii\base\Action
         }
 
         if (!$this->checkAccess) {
-            throw new ForbiddenHttpException(null, \Yii::t('app', 'You are not allowed to access this page.'));
+            throw new ForbiddenHttpException(\Yii::t('app', 'You are not allowed to access this page.'));
         }
 
         return true;
