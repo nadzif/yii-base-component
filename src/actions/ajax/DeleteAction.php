@@ -9,9 +9,9 @@
 namespace nadzif\base\actions\ajax;
 
 
+use nadzif\base\components\Action;
 use nadzif\base\helpers\StringHelper;
 use nadzif\base\widgets\FloatAlert;
-use yii\base\Action;
 use yii\db\ActiveRecord;
 use yii\helpers\Json;
 

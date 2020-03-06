@@ -8,10 +8,9 @@
 
 namespace nadzif\base\actions\ajax;
 
-use yii\base\Action;
+use nadzif\base\components\Action;
 use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
-use yii\helpers\Json;
 use yii\web\Response;
 
 class PutAction extends Action

@@ -9,8 +9,8 @@
 namespace nadzif\base\actions\json\dependant;
 
 
+use nadzif\base\components\Action;
 use nadzif\base\models\ActiveRecord;
-use yii\base\Action;
 
 class ListAction extends Action
 {

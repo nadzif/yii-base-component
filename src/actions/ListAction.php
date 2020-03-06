@@ -9,8 +9,8 @@
 namespace nadzif\base\actions;
 
 
+use nadzif\base\components\Action;
 use nadzif\base\models\GridModel;
-use yii\base\Action;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

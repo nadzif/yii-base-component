@@ -9,7 +9,9 @@
 namespace nadzif\base\actions\ajax;
 
 
-class ListAction
+use nadzif\base\components\Action;
+
+class ListAction extends Action
 {
 
 }

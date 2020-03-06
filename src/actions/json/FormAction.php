@@ -9,7 +9,9 @@
 namespace nadzif\base\actions\json;
 
 
-class FormAction
+use nadzif\base\components\Action;
+
+class FormAction extends Action
 {
 
 }

@@ -9,7 +9,9 @@
 namespace nadzif\base\actions\json;
 
 
-class DeleteAction
+use nadzif\base\components\Action;
+
+class DeleteAction extends Action
 {
 
 }

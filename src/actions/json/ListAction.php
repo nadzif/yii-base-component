@@ -9,7 +9,7 @@
 namespace nadzif\base\actions\json;
 
 
-use yii\base\Action;
+use nadzif\base\components\Action;
 use yii\db\ActiveQuery;
 use yii\db\ActiveRecord;
 

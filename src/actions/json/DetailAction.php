@@ -9,7 +9,9 @@
 namespace nadzif\base\actions\json;
 
 
-class DetailAction
+use nadzif\base\components\Action;
+
+class DetailAction extends Action
 {
 
 }
