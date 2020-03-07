@@ -52,7 +52,7 @@ class ActionColumn extends \kartik\grid\ActionColumn
             $this->buttons[$name] = function ($url) use ($name, $title, $icon) {
                 return Html::button('<i class="' . $icon . '"></i>', [
                     'class'   => 'btn btn-link text-info p-0',
-                    'titile'  => $title,
+                    'title'  => $title,
                     'onclick' => new JsExpression(
                         '(function(e){
                             console.log(e)
