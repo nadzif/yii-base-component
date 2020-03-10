@@ -27,6 +27,8 @@ class Table extends \yii\base\Widget
     public $options          = ['class' => 'table table-bordered table-hover'];
     public $headerOptions    = [];
     public $headers          = [];
+    public $theadOptions     = [];
+    public $tbodyOptions     = [];
     public $headerMode       = self::HEADER_MODE_SINGLE;
     public $rows             = [];
     public $fieldConfig      = [];
@@ -71,7 +73,7 @@ class Table extends \yii\base\Widget
 
         echo Html::beginTag('div', $this->containerOptions); // container
         echo Html::beginTag('table', $this->options);
-        echo Html::beginTag('thead');
+        echo Html::beginTag('thead', $this->theadOptions);
         $this->generateHeader();
         $this->headersLabel = ArrayHelper::getColumn($this->headers, 'label');
         echo Html::endTag('thead');
@@ -88,7 +90,7 @@ class Table extends \yii\base\Widget
         }
 
         // <TABLE BODY>
-        echo Html::beginTag('tbody');
+        echo Html::beginTag('tbody', $this->tbodyOptions);
         $this->generateRow();
         echo Html::endTag('tbody');
 
