@@ -392,6 +392,7 @@ class PhoneNumberValidator extends \yii\validators\StringValidator
 
     /** variable for message whether phone number is not listed in any provider */
     public $notListed;
+    public $wrongFormat;
 
     public function init()
     {
@@ -400,6 +401,11 @@ class PhoneNumberValidator extends \yii\validators\StringValidator
         /** set default message for not listed provider */
         if ($this->notListed == null) {
             $this->notListed = \Yii::t('app', '{attribute} not listed in any registered provider.');
+        }
+
+        /** set default message for not listed provider */
+        if ($this->wrongFormat == null) {
+            $this->wrongFormat = \Yii::t('app', 'Invalid {attribute} format.');
         }
     }
 
@@ -420,6 +426,10 @@ class PhoneNumberValidator extends \yii\validators\StringValidator
             /** set error while there's phoneNumber has no provider */
             if (!$hasProvider) {
                 $this->addError($model, $attribute, $this->notListed);
+            }
+
+            if (!preg_match('/^[0-9]{'.$this->min.','.$this->max.'}+$/', $countryFormatted)) {
+                $this->addError($model, $attribute, $this->wrongFormat);
             }
         }
 
@@ -442,6 +452,10 @@ class PhoneNumberValidator extends \yii\validators\StringValidator
             /** set error while there's phoneNumber has no provider */
             if (!$hasProvider) {
                 return [$this->notListed, []];
+            }
+
+            if (!preg_match('/^[0-9]{'.$this->min.','.$this->max.'}+$/', $countryFormatted)) {
+                return [$this->wrongFormat, []];
             }
         }
 
