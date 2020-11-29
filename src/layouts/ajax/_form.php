@@ -46,6 +46,7 @@ foreach ($formModel->scenarios()[$scenario] as $attributeName) {
 
     $inputType    = ArrayHelper::getValue($attributeOptions, 'inputType', 'text');
     $inputOptions = ArrayHelper::getValue($attributeOptions, 'inputOptions', []);
+    $inputScripts = ArrayHelper::getValue($attributeOptions, 'inputScripts', []);
     $inputLabel   = ArrayHelper::getValue($attributeOptions, 'inputLabel');
     $fieldOptions = ArrayHelper::getValue($attributeOptions, 'fieldOptions', []);
 
@@ -107,6 +108,10 @@ foreach ($formModel->scenarios()[$scenario] as $attributeName) {
     }
 
     echo $inputLabel ? $formField->label($inputLabel) : $formField;
+
+    foreach ($inputScripts as $script){
+        $this->registerJs($script);
+    }
 }
 
 switch ($formModel->scenario) {
