@@ -61,6 +61,7 @@ class GridModel extends \yii\db\ActiveRecord
     public  $expandRowColumn          = false;
     public  $expandRowColumnClass     = 'kartik\grid\ExpandRowColumn';
     public  $expandRowColumnOptions   = [];
+    public $defaultSortOrder = ['createdAt' => SORT_DESC];
     private $_activeRecord;
     private $_columns;
     private $_filters;
@@ -324,8 +325,11 @@ class GridModel extends \yii\db\ActiveRecord
             'query'      => $query,
             'pagination' => ['pageSize' => $this->pageSize,],
             'key'        => $this->sortKey,
-            'sort'       => ['defaultOrder' => ['createdAt' => SORT_DESC]]
         ];
+
+        if ($this->defaultSortOrder) {
+            $activeDataProviderConfig['sort'] = ['defaultOrder' => $this->defaultSortOrder];
+        }
 
         $dataProvider = new ActiveDataProvider($activeDataProviderConfig);
 
