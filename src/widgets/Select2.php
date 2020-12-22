@@ -26,6 +26,10 @@ class Select2 extends \kartik\select2\Select2
 
     public function __construct($config = array())
     {
+        if($theme = ArrayHelper::getValue(\Yii::$app->params, 'widget.select2.theme')){
+            $this->theme = $theme;
+        }
+
         $config['toggleAllSettings'] = [
             'selectLabel'   => Html::tag('i', false, ['class' => 'fa fa-check']) . \Yii::t('app', 'Select all'),
             'unselectLabel' => Html::tag('i', false, ['class' => 'fa fa-close']) . \Yii::t('app', 'Deselect all'),
