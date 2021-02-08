@@ -22,6 +22,9 @@ class ListAction extends Action
     public $idAttribute;
     public $textAttribute;
 
+    public $sortText = true;
+    public $sortType = SORT_ASC;
+
     public $condition = [];
 
     public function init()
@@ -50,6 +53,10 @@ class ListAction extends Action
 
             if ($this->condition) {
                 $query->andWhere($this->condition);
+            }
+
+            if($this->sortText){
+                $query->orderBy([$this->textAttribute => $this->sortType]);
             }
 
             $out['results'] = $query->all();
