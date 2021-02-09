@@ -35,7 +35,7 @@ class StringHelper
     {
         $explode = explode(' ', $string);
 
-        if (count($string) >= 2) {
+        if (strlen($string) >= 2) {
             if (count($explode) <= 1) {
                 return substr($explode[0], 0, 2);
             } else {
