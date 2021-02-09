@@ -13,6 +13,7 @@ use nadzif\base\components\Action;
 use nadzif\base\helpers\StringHelper;
 use nadzif\base\widgets\FloatAlert;
 use yii\db\ActiveRecord;
+use yii\db\IntegrityException;
 use yii\helpers\Json;
 
 class DeleteAction extends Action
@@ -62,20 +63,54 @@ class DeleteAction extends Action
                 }
             }
 
-            if ($condition && $this->condition && $model->delete()) {
-                $alerts[] = [
-                    'type'    => FloatAlert::TYPE_SUCCESS,
-                    'title'   => StringHelper::replace(
-                        $this->successTitle,
-                        \Yii::t('app', 'Delete Success'),
-                        $modelAttributes
-                    ),
-                    'message' => StringHelper::replace(
-                        $this->successTitle,
-                        \Yii::t('app', 'Record deleted successfully.'),
-                        $modelAttributes
-                    )
-                ];
+            if ($condition && $this->condition) {
+
+                try {
+                    if ($model->delete()) {
+                        $alerts[] = [
+                            'type'    => FloatAlert::TYPE_SUCCESS,
+                            'title'   => StringHelper::replace(
+                                $this->successTitle,
+                                \Yii::t('app', 'Delete Success'),
+                                $modelAttributes
+                            ),
+                            'message' => StringHelper::replace(
+                                $this->successTitle,
+                                \Yii::t('app', 'Record deleted successfully.'),
+                                $modelAttributes
+                            )
+                        ];
+                    } else {
+                        $alerts[] = [
+                            'type'    => FloatAlert::TYPE_DANGER,
+                            'title'   => StringHelper::replace(
+                                $this->successTitle,
+                                \Yii::t('app', 'Delete Failed'),
+                                $modelAttributes
+                            ),
+                            'message' => StringHelper::replace(
+                                $this->successTitle,
+                                \Yii::t('app', 'Failed while deleting record.'),
+                                $modelAttributes
+                            )
+                        ];
+                    }
+                } catch (IntegrityException $e) {
+                    $alerts[] = [
+                        'type'    => FloatAlert::TYPE_WARNING,
+                        'title'   => StringHelper::replace(
+                            $this->successTitle,
+                            \Yii::t('app', 'Delete Failed'),
+                            $modelAttributes
+                        ),
+                        'message' => StringHelper::replace(
+                            $this->successTitle,
+                            \Yii::t('app', 'Data relation exist, could not delete this record'),
+                            $modelAttributes
+                        )
+                    ];
+                }
+
             } else {
                 $alerts[] = [
                     'type'    => FloatAlert::TYPE_DANGER,
