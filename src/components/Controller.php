@@ -11,11 +11,11 @@ namespace nadzif\base\components;
 
 use yii\filters\AccessControl;
 use yii\filters\VerbFilter;
+use yii\helpers\ArrayHelper;
 
 class Controller extends \yii\web\Controller
 {
     public $allowedRoles = ['@'];
-    public $language;
 
     public function behaviors()
     {
@@ -46,8 +46,14 @@ class Controller extends \yii\web\Controller
     public function init()
     {
         parent::init();
-        if ($this->language) {
-            \Yii::$app->language = $this->language;
+        if (\Yii::$app->user->isGuest) {
+            $lang = \Yii::$app->session->get('language', 'en');
+        } else {
+            $user = \Yii::$app->user->identity;
+            $lang = ArrayHelper::getValue($user, 'language', 'en');
         }
+
+        \Yii::$app->language = $lang;
+
     }
 }
