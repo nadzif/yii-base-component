@@ -31,35 +31,21 @@ class StringHelper
         }
     }
 
-    public static function initial($string)
+    public static function initial($string, $length = 2)
     {
-        $explode = explode(' ', $string);
+        $initial = '';
+        $string  = preg_replace('/[^\p{L}\p{N}\s]/u', '', $string);
+        $words   = explode(' ', $string);
 
-        if (strlen($string) >= 2) {
-            if (count($explode) <= 1) {
-                return substr($explode[0], 0, 2);
-            } else {
-                $initialString = '';
+        foreach ($words as $word) {
+            $initial .= substr($word, 0, 1);
 
-                $iC = 0;
-                foreach ($explode as $singleString) {
-                    if ($iC == 2) {
-                        break;
-                    }
-
-                    if (!$singleString) {
-                        continue;
-                    }
-
-                    $initialString .= substr($singleString, 0, 1);
-                    $iC++;
-                }
-
-                return $initialString;
+            if (strlen($initial) >= $length) {
+                break;
             }
-        } else {
-            return $string;
         }
+
+        return $initial;
     }
 
     public static function shorten($string, $length = 30)
