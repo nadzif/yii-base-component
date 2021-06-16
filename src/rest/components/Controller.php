@@ -7,6 +7,7 @@ use nadzif\base\filters\SystemAppFilter;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\ContentNegotiator;
+use yii\filters\RateLimiter;
 use yii\filters\VerbFilter;
 
 class Controller extends \yii\web\Controller
@@ -21,6 +22,10 @@ class Controller extends \yii\web\Controller
     public function behaviors()
     {
         return [
+            'rateLimiter'            => [
+                'class'        => RateLimiter::className(),
+                'errorMessage' => \Yii::t('app', 'Too many request'),
+            ],
             'contentNegotiator'      => [
                 'class'   => ContentNegotiator::class,
                 'formats' => [
@@ -42,7 +47,8 @@ class Controller extends \yii\web\Controller
             ],
             'firstRequestTimeFilter' => [
                 'class' => FirstRequestTimeFilter::class
-            ]
+            ],
+
         ];
     }
 
@@ -69,7 +75,7 @@ class Controller extends \yii\web\Controller
     public function afterAction($action, $result)
     {
         if (!$result instanceof Response) {
-            throw new HttpException(500, 'Response should be instance of ' . Response::class);
+            throw new HttpException(500, \Yii::t('app', 'Response should be instance of nadzif\base\components\Response'));
         }
 
         if (($message = $result->validate()) !== true) {
@@ -77,10 +83,5 @@ class Controller extends \yii\web\Controller
         }
 
         return parent::afterAction($action, $result);
-    }
-
-    public function init()
-    {
-        parent::init();
     }
 }
