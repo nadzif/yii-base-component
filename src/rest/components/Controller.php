@@ -2,8 +2,8 @@
 
 namespace nadzif\base\rest\components;
 
-use api\filters\SystemAppFilter;
 use nadzif\base\filters\FirstRequestTimeFilter;
+use nadzif\base\filters\SystemAppFilter;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\ContentNegotiator;
