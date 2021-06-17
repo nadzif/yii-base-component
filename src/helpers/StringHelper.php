@@ -54,4 +54,41 @@ class StringHelper
         $msg   = strip_tags($regex);
         return YiiStringHelper::truncate($msg, $length);
     }
+
+    public static function generateWords($length = 1, $allowNumeric = false, $wordMin = 5, $wordMax = 10, $glue = ' ')
+    {
+        $chars = [
+            ['a', 'i', 'u', 'e', 'o'],
+            ['b', 'c', 'd', 'f', 'g', 'h', 'j', 'k', 'l', 'm', 'n', 'p', 'q', 'r', 's', 't', 'v', 'w', 'x', 'z', 'y'],
+        ];
+
+        if ($allowNumeric) {
+            $chars[] = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        }
+
+        $charLength = count($chars);
+
+        $words = [];
+        for ($iC = 0; $iC < $length; $iC++) {
+            $wordLength = rand($wordMin, $wordMax);
+            $word       = '';
+
+            $latestCharIndex = rand(0, $charLength - 1);
+            for ($iD = 0; $iD < $wordLength; $iD++) {
+                while (true) {
+                    $index = rand(0, $charLength - 1);
+                    if ($index != $latestCharIndex) {
+                        break;
+                    }
+                }
+                $word .= $chars[$index][rand(0, count($chars[$index]) - 1)];
+                $latestCharIndex = $index;
+            }
+
+            $words[] = $word;
+        }
+
+        return implode($glue, $words);
+
+    }
 }

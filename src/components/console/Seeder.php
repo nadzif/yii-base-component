@@ -1,13 +1,13 @@
 <?php
 
 
-namespace nadzif\base\components\console;
+namespace console\components;
 
 
 use Carbon\Carbon;
-
-use nadzif\base\validators\PhoneNumberValidator;
-use yii\db\ActiveRecord;
+use common\base\ActiveRecord;
+use common\validators\PhoneNumberValidator;
+use nadzif\base\helpers\StringHelper;
 use yii\base\BaseObject;
 use yii\helpers\ArrayHelper;
 
@@ -53,7 +53,12 @@ class Seeder extends BaseObject
             $value = array_rand((new PhoneNumberValidator())->prefixes[4]);
             $value .= rand(1000000, 9999999);
         } elseif ($configs['type'] == 'email') {
-            $value = \Yii::$app->security->generateRandomString(ArrayHelper::getValue($configs, 'length', 16));
+            $value = StringHelper::generateWords(
+                1,
+                ArrayHelper::getValue($configs, 'allowNumeric', true),
+                ArrayHelper::getValue($configs, 'minLength', 8),
+                ArrayHelper::getValue($configs, 'maxLength', 16)
+            );
             $value .= '@gmail.com';
         } elseif ($configs['type'] == 'integer') {
             $min   = ArrayHelper::getValue($configs, 'min', 0);
@@ -80,7 +85,27 @@ class Seeder extends BaseObject
 
             $value = $value->format('Y-m-d H:i:s');
         } else {
-            $value = \Yii::$app->security->generateRandomString(ArrayHelper::getValue($configs, 'length', 16));
+            $minlength = ArrayHelper::getValue($configs, 'length', 12);
+            $maxLength = ArrayHelper::getValue($configs, 'length', 12);
+            if (isset($configs['minLength'])) {
+                $minlength = $configs['minLength'];
+            }
+
+            if (isset($configs['maxLength'])) {
+                $minlength = $configs['maxLength'];
+            }
+
+            $value = StringHelper::generateWords(
+                ArrayHelper::getValue($configs, 'wordsLength', 1),
+                ArrayHelper::getValue($configs, 'allowNumeric', false),
+                $minlength,
+                $maxLength,
+                ArrayHelper::getValue($configs, 'glue', ' ')
+            );
+
+            if (isset($configs['call'])) {
+                $value = call_user_func($configs['call'], $value);
+            }
         }
 
         return $value;
