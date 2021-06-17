@@ -92,7 +92,7 @@ class Seeder extends BaseObject
             }
 
             if (isset($configs['maxLength'])) {
-                $minlength = $configs['maxLength'];
+                $maxLength = $configs['maxLength'];
             }
 
             $value = StringHelper::generateWords(
