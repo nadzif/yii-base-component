@@ -1,7 +1,7 @@
 <?php
 
 
-namespace console\components;
+namespace nadzif\base\components\console;
 
 
 use Carbon\Carbon;
