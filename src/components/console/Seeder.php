@@ -5,10 +5,10 @@ namespace console\components;
 
 
 use Carbon\Carbon;
-use common\base\ActiveRecord;
-use common\validators\PhoneNumberValidator;
 use nadzif\base\helpers\StringHelper;
+use nadzif\base\validators\PhoneNumberValidator;
 use yii\base\BaseObject;
+use yii\db\ActiveRecord;
 use yii\helpers\ArrayHelper;
 
 class Seeder extends BaseObject
