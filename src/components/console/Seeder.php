@@ -50,7 +50,10 @@ class Seeder extends BaseObject
     public function random($configs)
     {
         if ($configs['type'] == 'phoneNumber') {
-            $value = array_rand((new PhoneNumberValidator())->prefixes[4]);
+            $prefixes = (new PhoneNumberValidator())->prefixes;
+            $prefixesItems = $prefixes[rand(0, count($prefixes)-1)]['data'];
+
+            $value = $prefixesItems[array_rand($prefixesItems)];
             $value .= rand(1000000, 9999999);
         } elseif ($configs['type'] == 'email') {
             $value = StringHelper::generateWords(
