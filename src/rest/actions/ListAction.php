@@ -20,9 +20,7 @@ class ListAction extends QueryAction {
         $modelClass = new $this->query->modelClass;
         $tableName  = $modelClass::tableName();
 
-        $this->query
-            ->andWhere(['<=', $tableName . '.createdAt', $this->controller->firstRequestTime])
-            ->addOrderBy([$tableName . '.createdAt' => \SORT_DESC]);
+        $this->query->andWhere(['<=', $tableName . '.createdAt', $this->controller->firstRequestTime]);
 
         $queryParams = \Yii::$app->request->queryParams;
 
