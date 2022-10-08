@@ -54,4 +54,13 @@ class ActiveRecord extends \yii\db\ActiveRecord
 
         return $behaviors;
     }
+
+    public static function tableDbName($tableName)
+    {
+        $curdb = explode('=', self::getDb()->dsn);
+        $dbName = '{{' . $curdb[2] . '}}';
+        $prefix = self::getDb()->driverName == 'sqlsrv' ? $dbName . '.{{dbo}}.' : $dbName . '.';
+
+        return $prefix . $tableName;
+    }
 }
