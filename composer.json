@@ -22,12 +22,12 @@
 	"widget"
   ],
   "type": "yii2-extension",
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "prefer-stable": true,
   "require": {
-    "php": ">=5.5.0",
-    "yiisoft/yii2": ">=2.0",
-    "yiisoft/yii2-bootstrap": "^2.0",
+    "php": ">=5.6",
+    "yiisoft/yii2": "2.0.32",
+    "yiisoft/yii2-bootstrap4": "^2.0.4",
     "rmrevin/yii2-fontawesome": "^3.0",
     "rmrevin/yii2-ionicon": "^1.2",
     "ramsey/uuid": "^3.8",
@@ -38,7 +38,8 @@
     "jeremeamia/superclosure": "^2.4",
     "demogorgorn/yii2-ajax-submit-button": "^1.2",
     "nesbot/carbon": "^1.39",
-    "kartik-v/yii2-widget-activeform": "^1.5"
+    "kartik-v/yii2-widget-activeform": "^1.5",
+    "kartik-v/yii2-bootstrap4-dropdown": "1.0"
   },
   "autoload": {
     "psr-4": {
@@ -46,9 +47,19 @@
     }
   },
   "config": {
+    "process-timeout": 1800,
+    "fxp-asset": {
+      "enabled": false
+    },
     "allow-plugins": {
       "yiisoft/yii2-composer": true,
       "kylekatarnls/update-helper": true
     }
-  }
+  },
+  "repositories": [
+    {
+      "type": "composer",
+      "url": "https://asset-packagist.org"
+    }
+  ]
 }
