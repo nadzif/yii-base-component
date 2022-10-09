@@ -18,7 +18,6 @@ class Migration extends \yii\db\Migration
 
         // switch based on driver name
         switch ($this->getDb()->driverName) {
-
             case 'mysql':
                 $this->tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
                 break;
@@ -27,15 +26,20 @@ class Migration extends \yii\db\Migration
         }
     }
 
-    public function setForeignKey($table, $columns, $refTable, $refColumns, $delete = 'NO ACTION', $update = 'NO ACTION')
-    {
+    public function setForeignKey(
+        $table,
+        $columns,
+        $refTable,
+        $refColumns,
+        $delete = 'NO ACTION',
+        $update = 'NO ACTION'
+    ) {
         $name = $this->formatForeignKeyName($table, $refTable);
         parent::addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update);
     }
 
     public function formatForeignKeyName($tableNameForeign, $tableNamePrimary)
     {
-
         $tableNameForeign = explode('.', $tableNameForeign);
         $tableNameForeign = $tableNameForeign[count($tableNameForeign) - 1];
         $tableNameForeign = trim($tableNameForeign, '{}');
@@ -51,7 +55,7 @@ class Migration extends \yii\db\Migration
         return 'FK' . $tableNameForeign . $tableNamePrimary;
     }
 
-    public function addUuidPrimaryKey($table, $columns)
+    public function setPrimaryUUID($table, $column)
     {
         $originalTableName = explode('.', $table);
         $originalTableName = $originalTableName[count($originalTableName) - 1];
@@ -59,14 +63,8 @@ class Migration extends \yii\db\Migration
         $originalTableName = str_replace('%', '', $originalTableName);
         $originalTableName = str_replace(' ', '', ucwords(str_replace('_', ' ', $originalTableName)));
 
-        $suggestedKeyName = $originalTableName;
-
-        foreach ($columns as $column) {
-            $this->addColumn($table, $column, $this->string(36)->notNull());
-            $suggestedKeyName .= ucwords($column);
-        }
-
-        parent::addPrimaryKey($suggestedKeyName, $table, $columns);
+        $this->alterColumn($table, $column, $this->string(36)->notNull());
+        $this->addPrimaryKey('PK' . $originalTableName . ucwords($column), $table, $column);
     }
 
     public function addLogColumns($table)
