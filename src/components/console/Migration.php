@@ -87,4 +87,15 @@ class Migration extends \yii\db\Migration
     {
         parent::createTable($table, $columns, $this->tableOptions);
     }
+	
+	public function createStatusIndex($table, $column = 'status')
+    {
+        $originalTableName = explode('.', $table);
+        $originalTableName = $originalTableName[count($originalTableName) - 1];
+        $originalTableName = trim($originalTableName, '{}');
+        $originalTableName = str_replace('%', '', $originalTableName);
+        $originalTableName = str_replace(' ', '', ucwords(str_replace('_', ' ', $originalTableName)));
+
+        $this->createIndex('Index' . $originalTableName . ucwords($column), $table, $column);
+    }
 }
