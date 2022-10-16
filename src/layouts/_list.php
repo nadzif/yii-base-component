@@ -24,6 +24,7 @@ use yii\web\View;
 $gridView   = new GridView($gridViewConfig);
 $gridViewId = $gridView->getId();
 
+echo Html::beginTag('div', ['class' => 'col-sm-12']);
 echo Html::beginTag('div', ['class' => 'grid-container dataTables_wrapper']);
 echo Html::beginTag('div', ['class' => 'datatables-tools clearfix mb-2']);
 
@@ -78,6 +79,7 @@ echo Html::endTag('div'); //datatables-tools
 $gridView->run();
 
 echo Html::endTag('div'); //dataTables_wrapper
+echo Html::endTag('div'); //col-sm-12
 
 if ($gridModel->actionColumn && $gridModel->actionColumnClass == ActionColumn::className()) {
     echo Html::tag('div', false, ['id' => 'grid-update-section', 'style' => 'width:0; height:0; overflow: hidden;']);
