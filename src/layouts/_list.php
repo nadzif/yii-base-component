@@ -34,7 +34,7 @@ if ($createConfig) {
       'modalConfig'      => [
         'toggleButton' => [
           'label' => Ion::icon(Ion::_PLUS),
-          'class' => 'btn btn-sm btn-success ml-1'
+          'class' => 'btn btn-success ml-1'
         ]
       ],
       'activeFormConfig' => [],
@@ -50,12 +50,12 @@ foreach ($toolbars as $toolbar) {
 }
 
 echo Html::button(Ion::icon(Ion::_ANDROID_OPTIONS), [
-  'class'   => 'btn btn-sm btn-info ml-1',
+  'class'   => 'btn btn-info ml-1',
   'onclick' => "(function () { $('tr#{$gridViewId}-filters').toggleClass('d-none'); })()",
 ]);
 
 echo Html::button(Ion::icon(Ion::_ANDROID_SYNC), [
-  'class'   => 'btn btn-sm btn-info ml-1',
+  'class'   => 'btn btn-info ml-1',
   'onclick' => "(function (e) { $.pjax.reload({container:'#{$gridViewId}-pjax'}); })()",
 ]);
 echo Html::endTag('div');
