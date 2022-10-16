@@ -14,7 +14,7 @@
 
 use nadzif\base\components\ActionColumn;
 use nadzif\base\widgets\GridView;
-use kartik\select2\Select2;
+use nadzif\base\widgets\Select2;
 use rmrevin\yii\ionicon\Ion;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
@@ -31,14 +31,14 @@ echo Html::beginTag('div', ['class' => 'datatables-tools clearfix mb-2']);
 echo Html::beginTag('div', ['class' => 'd-flex justify-content-end float-right mb-2 mb-sm-0']);
 if ($createConfig) {
     $createConfigDef = [
-        'modalConfig'      => [
-            'toggleButton' => [
-                'label' => Ion::icon(Ion::_PLUS),
-                'class' => 'btn btn-sm btn-success ml-1'
-            ]
-        ],
-        'activeFormConfig' => [],
-        'gridViewId'       => $gridViewId,
+      'modalConfig'      => [
+        'toggleButton' => [
+          'label' => Ion::icon(Ion::_PLUS),
+          'class' => 'btn btn-sm btn-success ml-1'
+        ]
+      ],
+      'activeFormConfig' => [],
+      'gridViewId'       => $gridViewId,
     ];
     $formLayout      = '@nadzif/base/layouts/ajax/_form';
 
@@ -50,27 +50,27 @@ foreach ($toolbars as $toolbar) {
 }
 
 echo Html::button(Ion::icon(Ion::_ANDROID_OPTIONS), [
-    'class'   => 'btn btn-sm btn-info ml-1',
-    'onclick' => "(function () { $('tr#{$gridViewId}-filters').toggleClass('d-none'); })()",
+  'class'   => 'btn btn-sm btn-info ml-1',
+  'onclick' => "(function () { $('tr#{$gridViewId}-filters').toggleClass('d-none'); })()",
 ]);
 
 echo Html::button(Ion::icon(Ion::_ANDROID_SYNC), [
-    'class'   => 'btn btn-sm btn-info ml-1',
-    'onclick' => "(function (e) { $.pjax.reload({container:'#{$gridViewId}-pjax'}); })()",
+  'class'   => 'btn btn-sm btn-info ml-1',
+  'onclick' => "(function (e) { $.pjax.reload({container:'#{$gridViewId}-pjax'}); })()",
 ]);
 echo Html::endTag('div');
 
 echo Html::beginTag('div', ['id' => "{$gridViewId}-filters", 'class' => 'select2-wrap dataTables_length']);
 echo Select2::widget([
-    'model'        => $gridModel,
-    'attribute'    => 'pageSize',
-    'theme'        => Select2::THEME_DEFAULT,
-    'hideSearch'   => true,
-    'data'         => $pageSizeData,
-    'options'      => ['class' => 'grid-size-filter'],
-    'pluginEvents' => [
-        'change' => "function(e){ $.pjax({container: '#{$gridViewId}-pjax'}) }"
-    ]
+  'model'        => $gridModel,
+  'attribute'    => 'pageSize',
+  'theme'        => ArrayHelper::getValue(Yii::$app->params, 'widget.select2.theme', Select2::THEME_BOOTSTRAP),
+  'hideSearch'   => true,
+  'data'         => $pageSizeData,
+  'options'      => ['class' => 'grid-size-filter'],
+  'pluginEvents' => [
+    'change' => "function(e){ $.pjax({container: '#{$gridViewId}-pjax'}) }"
+  ]
 ]);
 echo Html::endTag('div'); //dataTables_length
 
@@ -116,7 +116,7 @@ if ($inlineToolbar) {
     })();
 JS;
     $this->registerJs(
-        $inlineToolbarsJS,
-        View::POS_READY
+      $inlineToolbarsJS,
+      View::POS_READY
     );
 }
