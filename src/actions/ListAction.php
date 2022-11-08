@@ -31,7 +31,6 @@ class ListAction extends Action
     public $showToggleData = false;
     public $view           = '@nadzif/base/layouts/_list';
     public $pageSizeData   = [
-        1   => 1,
         10  => 10,
         25  => 25,
         50  => 50,
