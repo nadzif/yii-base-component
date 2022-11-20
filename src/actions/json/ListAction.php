@@ -21,6 +21,7 @@ class ListAction extends Action
     public $activeRecordClass;
     public $idAttribute;
     public $textAttribute;
+    public $searchColumns = [];
 
     public $sortText = true;
     public $sortType = SORT_ASC;
@@ -47,9 +48,18 @@ class ListAction extends Action
             /** @var ActiveQuery $query */
             $query = $activeRecord::find()
                 ->select([$this->idAttribute, $textAttribute . ' AS text'])
-                ->where(['like', $textAttribute, $q])
                 ->asArray()
                 ->limit($this->limit);
+
+            if($this->searchColumns){
+                $conditions = ['or'];
+                foreach ($this->searchColumns as $searchColumn){
+                    $conditions[] = ['like', $searchColumn, $q];
+                }
+                $query->where($conditions);
+            }else{
+                $query->where(['like', $textAttribute, $q]);
+            }
 
             if ($this->condition) {
                 $query->andWhere($this->condition);
