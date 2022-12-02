@@ -389,7 +389,10 @@ class GridModel extends \yii\db\ActiveRecord
         }
 
         if ($this->actionColumn) {
-            $columns[] = ArrayHelper::merge(['class' => $this->actionColumnClass], $this->actionColumnOptions);
+            $columns[] = ArrayHelper::merge(
+                ['class' => $this->actionColumnClass, 'noWrap' => true],
+                $this->actionColumnOptions
+            );
         }
 
         if ($this->expandRowColumn) {
