@@ -80,8 +80,10 @@ class Table extends \yii\base\Widget
 
         if (!$this->rows) {
             $countColumn = count($this->headers);
+            echo Html::beginTag('tr');
             echo Html::tag('td', \Yii::t('app', 'No Data Available'),
                 ['colspan' => $countColumn, 'class' => 'not-set text-center']);
+            echo Html::endTag('tr');
         } else {
             if ($this->reverseBody) {
                 $this->rows       = array_reverse($this->rows);
