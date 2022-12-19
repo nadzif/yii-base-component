@@ -34,6 +34,9 @@ class GridModel extends \yii\db\ActiveRecord
     const FILTER_LIST       = 'list';
     const FILTER_LIST_AJAX  = 'listAjax';
 
+    const ACTION_COLUMN_POSITION_LEFT  = 'left';
+    const ACTION_COLUMN_POSITION_RIGHT = 'right';
+
     public $dropdownClass          = 'nadzif\base\widgets\Select2';
     public $dropdownOptions        = [];
     public $dropdownItemKey;
@@ -58,6 +61,7 @@ class GridModel extends \yii\db\ActiveRecord
     public  $actionColumn             = true;
     public  $actionColumnClass        = 'nadzif\base\components\ActionColumn';
     public  $actionColumnOptions      = [];
+    public  $actionColumnPosition     = 'right';
     public  $expandRowColumn          = false;
     public  $expandRowColumnClass     = 'kartik\grid\ExpandRowColumn';
     public  $expandRowColumnOptions   = [];
@@ -89,7 +93,7 @@ class GridModel extends \yii\db\ActiveRecord
 
         if ($this->dropdownClass == Select2::className()) {
             $this->dropdownOptions = ArrayHelper::merge(['pluginOptions' => ['allowClear' => true]],
-              $this->dropdownOptions);
+                $this->dropdownOptions);
 
             $this->dropdownItemKey = 'data';
         } else {
@@ -97,23 +101,23 @@ class GridModel extends \yii\db\ActiveRecord
         }
 
         $this->datePickerOptions = ArrayHelper::merge([
-          'pickerButton'  => ['label' => '<i class="fa fa-calendar"></i>'],
-          'pluginOptions' => [
-            'autoclose' => true,
-            'format'    => $this->dateFilterFormat,
-          ],
+            'pickerButton'  => ['label' => '<i class="fa fa-calendar"></i>'],
+            'pluginOptions' => [
+                'autoclose' => true,
+                'format'    => $this->dateFilterFormat,
+            ],
         ], $this->dateRangePickerOptions
         );
 
         $this->dateRangePickerOptions = ArrayHelper::merge([
-          'pluginOptions' => [
-            'autoclose'     => true,
-            'convertFormat' => true,
-            'locale'        => [
-              'format'    => 'YYYY-MM-DD',
-              'separator' => $this->dateRangeFilterSeparator,
+            'pluginOptions' => [
+                'autoclose'     => true,
+                'convertFormat' => true,
+                'locale'        => [
+                    'format'    => 'YYYY-MM-DD',
+                    'separator' => $this->dateRangeFilterSeparator,
+                ],
             ],
-          ],
         ], $this->dateRangePickerOptions
         );
 
@@ -183,27 +187,27 @@ class GridModel extends \yii\db\ActiveRecord
                 $condition           = ['=', $attributeQuery];
                 $filterType          = $this->dropdownClass;
                 $filterWidgetOptions = ArrayHelper::merge(
-                  ['options' => ['placeholder' => $attributeLabel]], $this->dropdownOptions,
-                  ArrayHelper::getValue($filterOptions, 'dropdownOptions', []),
-                  [$this->dropdownItemKey => $filterOptions['items']]
+                    ['options' => ['placeholder' => $attributeLabel]], $this->dropdownOptions,
+                    ArrayHelper::getValue($filterOptions, 'dropdownOptions', []),
+                    [$this->dropdownItemKey => $filterOptions['items']]
                 );
                 break;
 
             case self::FILTER_LIST_AJAX:
                 $pluginOptions = [
-                  'allowClear'         => true,
-                  'minimumInputLength' => 3,
-                  'language'           => [
-                    'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
-                  ],
-                  'ajax'               => [
-                    'url'      => Url::to(ArrayHelper::getValue($this->dropdownOptions, 'ajaxUrl')),
-                    'dataType' => 'json',
-                    'data'     => new JsExpression('function(params) { return {q:params.term}; }'),
-                  ],
-                  'escapeMarkup'       => new JsExpression('function (markup) { return markup; }'),
-                  'templateResult'     => new JsExpression('function(city) { return city.text; }'),
-                  'templateSelection'  => new JsExpression('function (city) { return city.text; }'),
+                    'allowClear'         => true,
+                    'minimumInputLength' => 3,
+                    'language'           => [
+                        'errorLoading' => new JsExpression("function () { return 'Waiting for results...'; }"),
+                    ],
+                    'ajax'               => [
+                        'url'      => Url::to(ArrayHelper::getValue($this->dropdownOptions, 'ajaxUrl')),
+                        'dataType' => 'json',
+                        'data'     => new JsExpression('function(params) { return {q:params.term}; }'),
+                    ],
+                    'escapeMarkup'       => new JsExpression('function (markup) { return markup; }'),
+                    'templateResult'     => new JsExpression('function(city) { return city.text; }'),
+                    'templateSelection'  => new JsExpression('function (city) { return city.text; }'),
                 ];
                 unset($this->dropdownOptions['ajaxUrl']);
 
@@ -211,8 +215,8 @@ class GridModel extends \yii\db\ActiveRecord
                 $condition           = ['=', $attributeQuery];
                 $filterType          = $this->dropdownClass;
                 $filterWidgetOptions = ArrayHelper::merge(
-                  ['options' => ['placeholder' => $attributeLabel]], $this->dropdownOptions,
-                  ArrayHelper::getValue($filterOptions, 'dropdownOptions', []), ['pluginOptions' => $pluginOptions]
+                    ['options' => ['placeholder' => $attributeLabel]], $this->dropdownOptions,
+                    ArrayHelper::getValue($filterOptions, 'dropdownOptions', []), ['pluginOptions' => $pluginOptions]
                 );
                 break;
 
@@ -299,9 +303,9 @@ class GridModel extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-          ['pageSize', 'integer'],
-          [$this->getAttributesKey(), 'safe'],
-          [$this->getAttributesKey(), 'string'],
+            ['pageSize', 'integer'],
+            [$this->getAttributesKey(), 'safe'],
+            [$this->getAttributesKey(), 'string'],
         ];
     }
 
@@ -318,9 +322,9 @@ class GridModel extends \yii\db\ActiveRecord
         $this->load($requestParams);
 
         $activeDataProviderConfig = [
-          'query'      => $query,
-          'pagination' => ['pageSize' => $this->pageSize,],
-          'key'        => $this->sortKey,
+            'query'      => $query,
+            'pagination' => ['pageSize' => $this->pageSize,],
+            'key'        => $this->sortKey,
         ];
 
         if ($this->defaultSortOrder) {
@@ -342,8 +346,8 @@ class GridModel extends \yii\db\ActiveRecord
 
             foreach ($this->_filters[$attributeKey] as $filter) {
                 $dataProvider->sort->attributes[$attributeKey] = [
-                  'asc'  => [$queryRules[$attributeKey] => SORT_ASC],
-                  'desc' => [$queryRules[$attributeKey] => SORT_DESC],
+                    'asc'  => [$queryRules[$attributeKey] => SORT_ASC],
+                    'desc' => [$queryRules[$attributeKey] => SORT_DESC],
                 ];
 
                 if ($filter[0] != 'between') {
@@ -382,13 +386,20 @@ class GridModel extends \yii\db\ActiveRecord
             $columns[] = ArrayHelper::merge(['class' => $this->checkboxColumnClass], $this->checkboxColumnOptions);
         }
 
+        if ($this->actionColumn && $this->actionColumnPosition == self::ACTION_COLUMN_POSITION_LEFT) {
+            $columns[] = ArrayHelper::merge(
+                ['class' => $this->actionColumnClass, 'noWrap' => true],
+                $this->actionColumnOptions
+            );
+        }
+
         if ($this->_columns) {
             $columns += $this->_columns;
         } else {
             $columns += $this->getAttributesKey();
         }
 
-        if ($this->actionColumn) {
+        if ($this->actionColumn && $this->actionColumnPosition == self::ACTION_COLUMN_POSITION_RIGHT) {
             $columns[] = ArrayHelper::merge(
                 ['class' => $this->actionColumnClass, 'noWrap' => true],
                 $this->actionColumnOptions
@@ -397,16 +408,16 @@ class GridModel extends \yii\db\ActiveRecord
 
         if ($this->expandRowColumn) {
             $defaultExpandRowColumnOptions = [
-              'expandIcon'              => '<span class="fas fa-expand text-info"></span>',
-              'collapseIcon'            => '<span class="fas fa-compress text-info"></span>',
-              'detailAnimationDuration' => 0,
-              'value'                   => function ($model, $key, $index, $column) {
-                  return GridView::ROW_COLLAPSED;
-              },
+                'expandIcon'              => '<span class="fas fa-expand text-info"></span>',
+                'collapseIcon'            => '<span class="fas fa-compress text-info"></span>',
+                'detailAnimationDuration' => 0,
+                'value'                   => function ($model, $key, $index, $column) {
+                    return GridView::ROW_COLLAPSED;
+                },
             ];
 
             $columns[] = ArrayHelper::merge(
-              ['class' => $this->expandRowColumnClass], $defaultExpandRowColumnOptions, $this->expandRowColumnOptions
+                ['class' => $this->expandRowColumnClass], $defaultExpandRowColumnOptions, $this->expandRowColumnOptions
             );
         }
 
