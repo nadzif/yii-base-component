@@ -33,6 +33,7 @@ class Table extends \yii\base\Widget
     public $rows             = [];
     public $fieldConfig      = [];
     public $rowOptions       = [];
+    public $summaryOptions   = [];
     public $summaryFormat    = 'decimal';
     public $responsive       = true;
     public $matrix           = [];
@@ -68,7 +69,6 @@ class Table extends \yii\base\Widget
 
     public function run()
     {
-
         echo $this->wrapper ? Html::beginTag('div', ['class' => 'row']) : "";
 
         echo Html::beginTag('div', $this->containerOptions); // container
@@ -78,22 +78,23 @@ class Table extends \yii\base\Widget
         $this->headersLabel = ArrayHelper::getColumn($this->headers, 'label');
         echo Html::endTag('thead');
 
+        // <TABLE BODY>
+        echo Html::beginTag('tbody', $this->tbodyOptions);
         if (!$this->rows) {
             $countColumn = count($this->headers);
             echo Html::beginTag('tr');
-            echo Html::tag('td', \Yii::t('app', 'No Data Available'),
-                ['colspan' => $countColumn, 'class' => 'not-set text-center']);
+            echo Html::tag('td', \Yii::t('app', 'No Data Available'), [
+                'colspan' => $countColumn,
+                'class'   => 'not-set text-center'
+            ]);
             echo Html::endTag('tr');
         } else {
             if ($this->reverseBody) {
                 $this->rows       = array_reverse($this->rows);
                 $this->rowOptions = array_reverse($this->rowOptions);
             }
+            $this->generateRow();
         }
-
-        // <TABLE BODY>
-        echo Html::beginTag('tbody', $this->tbodyOptions);
-        $this->generateRow();
         echo Html::endTag('tbody');
 
         if (count($this->summaryResult)) {
@@ -142,7 +143,6 @@ class Table extends \yii\base\Widget
                     echo Html::endTag('tr');
                 }
             }
-
         }
     }
 
@@ -151,7 +151,6 @@ class Table extends \yii\base\Widget
         foreach ($this->rows as $index => $row) {
             echo Html::beginTag('tr', $this->rowOptions[$index]);
             foreach ($row as $columnIndex => $data) {
-
                 $label                              =
                     is_array($data) ? ArrayHelper::getValue($data, 'label', null) : $data;
                 $this->matrix[$index][$columnIndex] = $label;
@@ -192,12 +191,27 @@ class Table extends \yii\base\Widget
     public function generateFooter()
     {
         echo Html::beginTag('tr');
+
+        $summaryLabelColumn = 0;
+
+        if ($this->summaryOptions) {
+            $summaryLabelColumn = ArrayHelper::getValue($this->summaryOptions, 'colspan', 1);
+            $summaryLabelString = ArrayHelper::getValue($this->summaryOptions, 'label', null);
+            echo Html::tag('td', Html::tag('b', $summaryLabelString), ['colspan' => $summaryLabelColumn]);
+        }
+
+
         foreach ($this->headers as $index => $header) {
-            echo Html::tag('td', isset($this->summaryResult[$index])
-                ?
+            if ($summaryLabelColumn) {
+                $summaryLabelColumn--;
+                continue;
+            }
+
+            $columnLabel = isset($this->summaryResult[$index]) ?
                 \Yii::$app->formatter->format($this->summaryResult[$index], $this->summaryFormat)
-                :
-                null, ['align' => 'right']);
+                : null;
+
+            echo Html::tag('td', Html::tag('b', $columnLabel), ['align' => 'right']);
         }
         echo Html::endTag('tr');
     }
