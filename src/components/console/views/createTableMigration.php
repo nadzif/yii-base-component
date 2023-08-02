@@ -22,6 +22,10 @@ $originalTableName = trim($originalTableName, '{}');
 $originalTableName = str_replace('%', '', $originalTableName);
 $originalTableName = str_replace(' ', '', ucwords(str_replace('_', ' ', $originalTableName)));
 
+$fields[] = [
+    "property"   => "status",
+    "decorators" => "string(50)->notNull()->defaultValue($originalTableName::STATUS_ACTIVE)"
+]
 ?>
 
 use nadzif\base\components\console\Migration;
