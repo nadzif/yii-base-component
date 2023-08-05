@@ -52,8 +52,6 @@ class Controller extends \yii\web\Controller
             $user = \Yii::$app->user->identity;
             $lang = ArrayHelper::getValue($user, 'language', 'en');
         }
-
         \Yii::$app->language = $lang;
-
     }
 }

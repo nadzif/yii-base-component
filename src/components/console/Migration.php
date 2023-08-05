@@ -26,6 +26,17 @@ class Migration extends \yii\db\Migration
         }
     }
 
+    public static function originalTableName($table)
+    {
+        $table = explode('.', $table);
+        $table = $table[count($table) - 1];
+        $table = trim($table, '{}');
+        $table = str_replace('%', '', $table);
+        $table = str_replace(' ', '', ucwords(str_replace('_', ' ', $table)));
+
+        return $table;
+    }
+
     public function setForeignKey(
         $table,
         $columns,
@@ -40,31 +51,15 @@ class Migration extends \yii\db\Migration
 
     public function formatForeignKeyName($tableNameForeign, $tableNamePrimary)
     {
-        $tableNameForeign = explode('.', $tableNameForeign);
-        $tableNameForeign = $tableNameForeign[count($tableNameForeign) - 1];
-        $tableNameForeign = trim($tableNameForeign, '{}');
-        $tableNameForeign = str_replace('%', '', $tableNameForeign);
-        $tableNameForeign = str_replace(' ', '', ucwords(str_replace('_', ' ', $tableNameForeign)));
-
-        $tableNamePrimary = explode('.', $tableNamePrimary);
-        $tableNamePrimary = $tableNamePrimary[count($tableNamePrimary) - 1];
-        $tableNamePrimary = trim($tableNamePrimary, '{}');
-        $tableNamePrimary = str_replace('%', '', $tableNamePrimary);
-        $tableNamePrimary = str_replace(' ', '', ucwords(str_replace('_', ' ', $tableNamePrimary)));
-
-        return 'FK' . $tableNameForeign . $tableNamePrimary;
+        return 'FK'.self::originalTableName($tableNameForeign).self::originalTableName($tableNamePrimary);
     }
 
     public function setPrimaryUUID($table, $column)
     {
-        $originalTableName = explode('.', $table);
-        $originalTableName = $originalTableName[count($originalTableName) - 1];
-        $originalTableName = trim($originalTableName, '{}');
-        $originalTableName = str_replace('%', '', $originalTableName);
-        $originalTableName = str_replace(' ', '', ucwords(str_replace('_', ' ', $originalTableName)));
+        $originalTableName = self::originalTableName($table);
 
         $this->alterColumn($table, $column, $this->string(36)->notNull());
-        $this->addPrimaryKey('PK' . $originalTableName . ucwords($column), $table, $column);
+        $this->addPrimaryKey('PK'.$originalTableName.ucwords($column), $table, $column);
     }
 
     public function addLogColumns($table)
@@ -74,28 +69,24 @@ class Migration extends \yii\db\Migration
         $this->addColumn($table, 'updatedAt', $this->dateTime());
         $this->addColumn($table, 'updatedBy', $this->string());
 
-        $originalTableName = explode('.', $table);
-        $originalTableName = $originalTableName[count($originalTableName) - 1];
-        $originalTableName = trim($originalTableName, '{}');
-        $originalTableName = str_replace('%', '', $originalTableName);
-        $originalTableName = str_replace(' ', '', ucwords(str_replace('_', ' ', $originalTableName)));
-
-        $this->createIndex("Index" . $originalTableName . 'CreatedAt', $table, "createdAt");
+        $this->createColumnIndex($table, "createdAt");
+        $this->createColumnIndex($table, "updatedAt");
     }
 
     public function createTable($table, $columns, $options = null)
     {
         parent::createTable($table, $columns, $this->tableOptions);
     }
-	
-	public function createStatusIndex($table, $column = 'status')
-    {
-        $originalTableName = explode('.', $table);
-        $originalTableName = $originalTableName[count($originalTableName) - 1];
-        $originalTableName = trim($originalTableName, '{}');
-        $originalTableName = str_replace('%', '', $originalTableName);
-        $originalTableName = str_replace(' ', '', ucwords(str_replace('_', ' ', $originalTableName)));
 
-        $this->createIndex('Index' . $originalTableName . ucwords($column), $table, $column);
+
+    public function createColumnIndex($table, $column = 'status')
+    {
+        $originalTableName = self::originalTableName($table);
+        $this->createIndex('Index'.$originalTableName.ucwords($column), $table, $column);
+    }
+
+    public function createStatusIndex($table)
+    {
+        $this->createColumnIndex($table, "status");
     }
 }
